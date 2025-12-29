@@ -1,7 +1,7 @@
 ---
 author: Franklin KANA NGUEDIA 
-pubDatetime: 2025-12-13T16:52:45.934Z
-modDatetime: 2025-12-13T16:52:45.934Z
+pubDatetime: 2025-10-29T16:52:45.934Z
+modDatetime: 2025-10-29T16:52:45.934Z
 title: Construire un RAG fiable, traçable et auditable
 slug: rag-precision-tracabilite
 featured: true
@@ -15,17 +15,20 @@ description: >
   traçabilité complète jusqu’à la page source.
 ---
 
-Comment l'URSSAF peut révolutionner sa gestion documentaire avec un système RAG de haute précision
-Étude de cas : Transformer 60 ans d'archives réglementaires en assistant intelligent pour 45,000 collaborateurs
+## L'URSSAF 
+**Étude de cas : Un assistant RAG haute précision pour 45 000 collaborateurs**
 
-*« J’ai conçu un système RAG de haute précision avec traçabilité visuelle, initialement pour des données techniques complexes. Je suis convaincu qu’il répond à un besoin critique de l’URSSAF : permettre aux agents de s’appuyer sur une IA générative fiable, auditable et conforme pour interpréter la réglementation sociale.
+J'ai développé un système **RAG (Retrieval-Augmented Generation)** de haute précision, conçu pour transformer des archives complexes en une base de connaissances fiable et auditable. Je suis convaincu que cette solution répond à un défi majeur de l’URSSAF : permettre aux agents de naviguer dans la réglementation sociale avec une IA générative sécurisée.
 
-Ce prototype intègre déjà les piliers demandés : ingestion de documents non structurés, retrieval précis avec métadonnées (page, document), génération sourcée, monitoring des hallucinations, et feedback utilisateurs.
+---
 
-En tant que Data Engineer IA, je souhaite contribuer à industrialiser ce type de solution au sein de la Fabrique, en collaboration avec les Data Scientists et les métiers, pour transformer la donnée réglementaire en levier de qualité du service public. »*
+### 🚀 Les atouts clés du prototype
+* **Fiabilité absolue :** Citations sources et traçabilité visuelle (page, document) pour éliminer l'incertitude.
+* **Maîtrise technique :** Ingestion de données non structurées, monitoring des hallucinations et boucles de feedback.
+* **Conformité :** Une architecture pensée pour les exigences du service public.
 
-Démo :
-Code source : 
+* code source : https://github.com/fkdia23/RAG---Deep-Linking-Search
+* Démo: voir section 6
 
 ## Table of contents
 
@@ -214,44 +217,7 @@ Storage:
 
 ### 3.3 Flux de Données
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant F as Frontend
-    participant A as API
-    participant D as DocProcessor
-    participant O as Ollama
-    participant N as Neo4j
-    
-    U->>F: Upload document.pdf
-    F->>A: POST /upload/file
-    A->>D: process_document()
-    D->>D: Extract text by page
-    D->>D: Split into chunks (500 chars)
-    
-    loop For each chunk
-        D->>O: generate_embedding()
-        O-->>D: [vector 768 dims]
-        D->>N: store_chunk_with_embedding()
-    end
-    
-    A-->>F: {chunks_created: 45}
-    F-->>U: Upload success
-    
-    Note over U,N: Later: User asks question
-    
-    U->>F: "Quelle est la politique?"
-    F->>A: POST /query
-    A->>O: generate_embedding(question)
-    O-->>A: [query_vector]
-    A->>N: similarity_search(vector, top_k=5)
-    N-->>A: [top_chunks with metadata]
-    A->>O: generate_answer(question, chunks)
-    O-->>A: answer + reasoning
-    A->>A: identify_used_chunks()
-    A-->>F: {answer, sources, time}
-    F-->>U: Display with references
-```
+![alt text](<../../../public/diagram system.png>)
 
 ---
 
@@ -452,7 +418,8 @@ FOR (d:Document) REQUIRE d.id IS UNIQUE;
 
 ## 5. Amélioration : 
 
-Un RAG n’est utile que s’il est **fiable dans la durée**. La précision initiale ne suffit pas : le système doit **s’auto-évaluer, s’adapter et gagner la confiance** de ses utilisateurs au fil du temps. Pour y parvenir, nous devons mettre en place des /
+Un RAG n’est utile que s’il est **fiable dans la durée**.La précision initiale ne suffit pas : le système doit **s’auto-évaluer, s’adapter et gagner la confiance** de ses utilisateurs au fil du temps. Pour y parvenir, nous devons mettre en place des :
+
 #### **Métriques clés à surveiller en continu**
 
 - **Latence par étape** :    
@@ -480,11 +447,11 @@ Un RAG n’est utile que s’il est **fiable dans la durée**. La précision ini
     - Évolution du taux de succès du retrieval sur 7/30 jours
     - Alertes en cas de dégradation soudaine 
 
-## **Backend et sécurité**
+#### **Backend et sécurité**
 
 - **Sécurité des données** :
     - Isolation des documents par **tenant** (multi-tenant léger via préfixe dans les IDs)
-    - Chiffrement des uploads au repos (AES-256) et en transit (TLS 1.3)
-    - Pas de fuite vers des services externes : **100 % local** (Ollama + Neo4j en interne)
+    - Chiffrement des uploads
 
-## 6. La démo : 
+## 6. 🎥 Démo : 
+ 
