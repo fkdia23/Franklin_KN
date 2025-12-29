@@ -18,9 +18,9 @@ export const getStaticPaths = (async ({ paginate }) => {
 const { page } = Astro.props;
 ---
 
-<Layout title={`Posts | ${SITE.title}`}>
+<Layout title={`Projets  | ${SITE.title}`}>
   <Header />
-  <Main pageTitle="Posts" pageDesc="All the articles I've posted.">
+  <Main pageTitle="Projets " pageDesc="Tous mes Projets ">
     <ul>
       {page.data.map(data => <Card {...data} />)}
     </ul>
@@ -28,5 +28,5 @@ const { page } = Astro.props;
 
   <Pagination {page} />
 
-  <Footer noMarginTop={page.lastPage > 1} />
+  <!-- <Footer noMarginTop={page.lastPage > 1} /> -->
 </Layout>

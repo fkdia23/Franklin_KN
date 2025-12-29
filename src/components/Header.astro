@@ -39,17 +39,18 @@ const isActive = (path: string) => {
       id="top-nav-wrap"
       class="relative flex w-full items-baseline justify-between bg-background p-4 sm:items-center sm:py-6"
     >
-      <a
+      <!-- <a
         href="/"
         class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"
       >
         {SITE.title}
-      </a>
+      </a> -->
+
       <nav
         id="nav-menu"
         class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"
       >
-        <button
+        <!-- <button
           id="menu-btn"
           class="focus-outline self-end p-2 sm:hidden"
           aria-label="Open Menu"
@@ -58,7 +59,7 @@ const isActive = (path: string) => {
         >
           <IconX id="close-icon" class="hidden" />
           <IconMenuDeep id="menu-icon" />
-        </button>
+        </button> -->
         <ul
           id="menu-items"
           class:list={[
@@ -70,7 +71,7 @@ const isActive = (path: string) => {
         >
           <li class="col-span-2">
             <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
-              Posts
+              Projets 
             </a>
           </li>
           <li class="col-span-2">
@@ -80,7 +81,7 @@ const isActive = (path: string) => {
           </li>
           <li class="col-span-2">
             <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
-              About
+              À propos
             </a>
           </li>
           {
