@@ -15,8 +15,6 @@ description: >
   traçabilité complète jusqu’à la page source.
 ---
 
-## L'URSSAF 
-**Étude de cas : Un assistant RAG haute précision pour 45 000 collaborateurs**
 
 J'ai développé un système **RAG (Retrieval-Augmented Generation)** de haute précision, conçu pour transformer des archives complexes en une base de connaissances fiable et auditable. Je suis convaincu que cette solution répond à un défi majeur de l’URSSAF : permettre aux agents de naviguer dans la réglementation sociale avec une IA générative sécurisée.
 
@@ -414,7 +412,7 @@ FOR (d:Document) REQUIRE d.id IS UNIQUE;
 
 ```
 
-![alt text](image.png)
+![alt text](<../../../public/assets/image.png>) 
 
 ## 5. Amélioration : 
 
