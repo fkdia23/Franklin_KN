@@ -1,5 +1,5 @@
 ---
-author: Franklin KANA NGUEDIA 
+author: Franklin KANA NGUEDIA
 pubDatetime: 2025-10-29T16:52:45.934Z
 modDatetime: 2025-10-29T16:52:45.934Z
 title: Construire un RAG fiable, traçable et auditable
@@ -15,18 +15,18 @@ description: >
   traçabilité complète jusqu’à la page source.
 ---
 
-
 J'ai développé un système **RAG (Retrieval-Augmented Generation)** de haute précision, conçu pour transformer des archives complexes en une base de connaissances fiable et auditable. Je suis convaincu que cette solution répond à un défi majeur de l’URSSAF : permettre aux agents de naviguer dans la réglementation sociale avec une IA générative sécurisée.
 
 ---
 
 ### 🚀 Les atouts clés du prototype
-* **Fiabilité absolue :** Citations sources et traçabilité visuelle (page, document) pour éliminer l'incertitude.
-* **Maîtrise technique :** Ingestion de données non structurées, monitoring des hallucinations et boucles de feedback.
-* **Conformité :** Une architecture pensée pour les exigences du service public.
 
-* code source : https://github.com/fkdia23/RAG---Deep-Linking-Search
-* Démo: voir section 6
+- **Fiabilité absolue :** Citations sources et traçabilité visuelle (page, document) pour éliminer l'incertitude.
+- **Maîtrise technique :** Ingestion de données non structurées, monitoring des hallucinations et boucles de feedback.
+- **Conformité :** Une architecture pensée pour les exigences du service public.
+
+- code source : https://github.com/fkdia23/RAG---Deep-Linking-Search
+- Démo: voir section 6
 
 ## Table of contents
 
@@ -38,8 +38,7 @@ J'ai développé un système **RAG (Retrieval-Augmented Generation)** de haute p
   - Aucune traçabilité vers la source
   - Incapacité à justifier une affirmation par un extrait précis
 - **Conséquence** : Perte de confiance, inutilisabilité dans des contextes critiques (audit, support technique, recherche)
-- **Objectif du projet** : Aller au-delà de la simple génération → **répondre avec précision** (*precision*) **et prouvabilité** (*provenance*).
-
+- **Objectif du projet** : Aller au-delà de la simple génération → **répondre avec précision** (_precision_) **et prouvabilité** (_provenance_).
 
 ## **2. La Solution Prototype : Un RAG qui cite, surligne et renvoie à la source**
 
@@ -51,7 +50,7 @@ Imaginons CLARA (Conseiller Législatif et Réglementaire Augmenté), un systèm
   - Réponse générée **avec citation explicite** : nom du document, auteur, section/page
   - **Surlignage dynamique** du passage source dans le texte original
   - **Deep linking** vers la page exacte du PDF source (ex: `#page=42`)
-- **Expérience utilisateur** : L’utilisateur voit non seulement *quoi*, mais aussi *d’où* vient l’information → transparence totale.
+- **Expérience utilisateur** : L’utilisateur voit non seulement _quoi_, mais aussi _d’où_ vient l’information → transparence totale.
 - **Cas d’usage illustratif** : Exemple concret (ex: ingénieur cherchant une spécification dans un manuel technique de 300 pages).
 
 ### 2.1 Workflow Utilisateur
@@ -115,7 +114,6 @@ Imaginons CLARA (Conseiller Législatif et Réglementaire Augmenté), un systèm
 - **Gestion des dépendances** : `uv` (remplacement ultra-rapide de pip)
 
 ---
-
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
@@ -238,6 +236,7 @@ Le système suit un pipeline linéaire et observable :
    - Un lien cliquable (`#page=XX`) ouvrant directement la page du PDF
 
 Cette chaîne garantit **reproductibilité**, **traçabilité** et **expérience utilisateur transparente**.
+
 ### 4.1. Justification des Choix Techniques
 
 #### 4.1.1 Pourquoi Neo4j (Base de Données Graph) ?
@@ -245,62 +244,61 @@ Cette chaîne garantit **reproductibilité**, **traçabilité** et **expérience
 **Avantages pour le RAG:**
 
 1. **Relations Naturelles**
-    ```cypher
-	 (Document)-[:CONTAINS]->(Chunk)-[:RELATES_TO]->(Concept)
-    ```
-    - Modélisation intuitive des relations document-chunk
-    - Traversée rapide pour trouver documents connexes
-    - Extension future : graphe de connaissances (entités, concepts)
-    
-2. **Recherche Vectorielle Native**
-    
-    ```cypher
-    // Neo4j 5.x supporte les embeddings
-    MATCH (c:Chunk)
-    WITH c, gds.similarity.cosine(c.embedding, $query_vector) AS score
-    WHERE score > 0.5
-    RETURN c ORDER BY score DESC
-    ```
-    
-1. **Performance**
-    - Index sur embeddings : recherche < 100ms
-    - Cypher optimisé pour graphes
-    - Mieux que PostgreSQL + pgvector pour relations complexes
+   ```cypher
+    (Document)-[:CONTAINS]->(Chunk)-[:RELATES_TO]->(Concept)
+   ```
 
-2. **Évolutivité**
-    - Ajout facile de nœuds (Entities, Topics, Authors)
-    - Requêtes multi-hop : "Documents similaires à celui-ci"
-    - Traçabilité : historique des modifications
+   - Modélisation intuitive des relations document-chunk
+   - Traversée rapide pour trouver documents connexes
+   - Extension future : graphe de connaissances (entités, concepts)
+2. **Recherche Vectorielle Native**
+
+   ```cypher
+   // Neo4j 5.x supporte les embeddings
+   MATCH (c:Chunk)
+   WITH c, gds.similarity.cosine(c.embedding, $query_vector) AS score
+   WHERE score > 0.5
+   RETURN c ORDER BY score DESC
+   ```
+
+3. **Performance**
+   - Index sur embeddings : recherche < 100ms
+   - Cypher optimisé pour graphes
+   - Mieux que PostgreSQL + pgvector pour relations complexes
+
+4. **Évolutivité**
+   - Ajout facile de nœuds (Entities, Topics, Authors)
+   - Requêtes multi-hop : "Documents similaires à celui-ci"
+   - Traçabilité : historique des modifications
 
 #### 4.1.2 Pourquoi Ollama (LLM Local) ?
 
 **Raisons Stratégiques:**
 
 1. **Confidentialité et Conformité**
-    - Données sensibles ne quittent jamais l'infrastructure
-    - Conformité RGPD garantie
-    - Pas de risque de fuite vers OpenAI/Anthropic
+   - Données sensibles ne quittent jamais l'infrastructure
+   - Conformité RGPD garantie
+   - Pas de risque de fuite vers OpenAI/Anthropic
 
 2. **Performance Prévisible**
-    - Pas de rate limits
-    - Latence constante (1-3s)
-    - Pas de dépendance réseau
-    
+   - Pas de rate limits
+   - Latence constante (1-3s)
+   - Pas de dépendance réseau
 3. **Personnalisation**
-    - Fine-tuning possible sur données métier
-    - Contrôle total des prompts
-    - Support multilingue (français natif)
+   - Fine-tuning possible sur données métier
+   - Contrôle total des prompts
+   - Support multilingue (français natif)
 
 **Modèles Choisis:**
 
 - **Mistral 7B** pour génération
-    - Excellent en français
-    - Performances comparables GPT-3.5
-    - Rapide (2-3s sur GPU)
+  - Excellent en français
+  - Performances comparables GPT-3.5
+  - Rapide (2-3s sur GPU)
 - **nomic-embed-text** pour embeddings
-    - 768 dimensions
-    - Optimisé retrieval
-    - Support multilingue
+  - 768 dimensions
+  - Optimisé retrieval
+  - Support multilingue
 
 #### 4.1.3 Pourquoi FastAPI + UV ?
 
@@ -342,11 +340,11 @@ Document: "Lorem ipsum... [2000 chars]"
 
 **Justification:**
 
-|Taille Chunk|Avantages|Inconvénients|Verdict|
-|---|---|---|---|
-|100-200 chars|Précis|Perd contexte|❌ Trop petit|
-|**500 chars**|✅ **Balance**|-|✅ **Optimal**|
-|1000+ chars|Plus contexte|Bruit, lent|❌ Trop gros|
+| Taille Chunk  | Avantages      | Inconvénients | Verdict        |
+| ------------- | -------------- | ------------- | -------------- |
+| 100-200 chars | Précis         | Perd contexte | ❌ Trop petit  |
+| **500 chars** | ✅ **Balance** | -             | ✅ **Optimal** |
+| 1000+ chars   | Plus contexte  | Bruit, lent   | ❌ Trop gros   |
 
 **Overlap:**
 
@@ -393,17 +391,17 @@ CREATE (d)-[:CONTAINS {
 
 ```cypher
 // Performance: index sur recherches fréquentes
-CREATE INDEX chunk_id IF NOT EXISTS 
+CREATE INDEX chunk_id IF NOT EXISTS
 FOR (c:Chunk) ON (c.id);
 
-CREATE INDEX doc_id IF NOT EXISTS 
+CREATE INDEX doc_id IF NOT EXISTS
 FOR (d:Document) ON (d.id);
 
-CREATE INDEX doc_filename IF NOT EXISTS 
+CREATE INDEX doc_filename IF NOT EXISTS
 FOR (d:Document) ON (d.filename);
 
 // Full-text search backup
-CREATE FULLTEXT INDEX chunk_text IF NOT EXISTS 
+CREATE FULLTEXT INDEX chunk_text IF NOT EXISTS
 FOR (c:Chunk) ON EACH [c.text];
 
 // Contraintes unicité
@@ -412,44 +410,40 @@ FOR (d:Document) REQUIRE d.id IS UNIQUE;
 
 ```
 
-![alt text](<../../../public/assets/image.png>) 
+![alt text](../../../public/assets/image.png)
 
-## 5. Amélioration : 
+## 5. Amélioration :
 
 Un RAG n’est utile que s’il est **fiable dans la durée**.La précision initiale ne suffit pas : le système doit **s’auto-évaluer, s’adapter et gagner la confiance** de ses utilisateurs au fil du temps. Pour y parvenir, nous devons mettre en place des :
 
 #### **Métriques clés à surveiller en continu**
 
-- **Latence par étape** :    
-    - Ingestion (temps de traitement par document)
-    - Retrieval (recherche vectorielle < 100 ms cible)
-    - Génération (temps de réponse LLM)
-    
-- **Qualité du retrieval** :    
-    - Précision et rappel évalués via **LLM-as-a-judge** (ex: « Ce chunk répond-il à la question ? »)
-    - Comparaison avec un jeu de test métier validé par des experts
-    
+- **Latence par étape** :
+  - Ingestion (temps de traitement par document)
+  - Retrieval (recherche vectorielle < 100 ms cible)
+  - Génération (temps de réponse LLM)
+- **Qualité du retrieval** :
+  - Précision et rappel évalués via **LLM-as-a-judge** (ex: « Ce chunk répond-il à la question ? »)
+  - Comparaison avec un jeu de test métier validé par des experts
 - **Taux d’hallucination** :
-    - Vérification automatique que chaque affirmation dans la réponse est **directement soutenue** par au moins un extrait source
-    - Détection via NLI (Natural Language Inference) ou règles de couverture lexicale/sémantique
+  - Vérification automatique que chaque affirmation dans la réponse est **directement soutenue** par au moins un extrait source
+  - Détection via NLI (Natural Language Inference) ou règles de couverture lexicale/sémantique
 
 #### **Observabilité opérationnelle**
 
 - **Logs structurés** (format JSON) incluant :
-    - Identifiant de requête unique
-    - Liste des chunks récupérés (ID, score cosine, métadonnées)
-    - Prompt envoyé au LLM et réponse brute
-    
+  - Identifiant de requête unique
+  - Liste des chunks récupérés (ID, score cosine, métadonnées)
+  - Prompt envoyé au LLM et réponse brute
 - **Dashboard centralisé** (Grafana + Prometheus) :
-    - Taux d’erreur, volume de requêtes, distribution des latences
-    - Évolution du taux de succès du retrieval sur 7/30 jours
-    - Alertes en cas de dégradation soudaine 
+  - Taux d’erreur, volume de requêtes, distribution des latences
+  - Évolution du taux de succès du retrieval sur 7/30 jours
+  - Alertes en cas de dégradation soudaine
 
 #### **Backend et sécurité**
 
 - **Sécurité des données** :
-    - Isolation des documents par **tenant** (multi-tenant léger via préfixe dans les IDs)
-    - Chiffrement des uploads
+  - Isolation des documents par **tenant** (multi-tenant léger via préfixe dans les IDs)
+  - Chiffrement des uploads
 
-## 6. 🎥 Démo : 
- 
+## 6. 🎥 Démo :

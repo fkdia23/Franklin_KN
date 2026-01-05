@@ -1,9 +1,10 @@
 export const SITE = {
   website: "https://fkdia23.github.io", // replace this with your deployed domain
-  author: "Sat Naing",
+  base: "Franklin_KN", // replace this with your repo name for github pages deployment
+  author: "Franklin_KN",
   profile: "https://satnaing.dev/",
   desc: "A minimal, responsive and SEO-friendly Astro blog theme.",
-  title: "AstroPaper",
+  title: "Home",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
   postPerIndex: 4,

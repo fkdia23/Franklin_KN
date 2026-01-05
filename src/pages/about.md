@@ -21,18 +21,21 @@ Mes domaines d'intervention incluent :
 ## Expérience professionnelle
 
 ### Data Engineer / Data Analyst - Storengy France
-*Mai 2024 - Novembre 2024*
+
+_Mai 2024 - Novembre 2024_
 
 Modernisation du système décisionnel d'un leader européen du stockage de gaz naturel. J'ai conçu et automatisé plus de 10 pipelines ETL sous Azure Data Factory et Talend, modélisé des datamarts pour différents domaines métiers (Exploitation, QHSE, Achats) et participé au développement d'un POC Chatbot IA basé sur des architectures RAG.
 
 ### Data Scientist - Likup Digital (Projet Copyly)
-*Février 2022 - Septembre 2024*
+
+_Février 2022 - Septembre 2024_
 
 Développement d'une solution SaaS innovante de génération de contenus marketing par IA. J'ai orchestré l'architecture complète : pipelines RAG avec LangChain et bases vectorielles (Milvus, FAISS), fine-tuning de modèles GPT, création de l'API backend (Express.js) et de l'interface sécurisée (Next.js avec RBAC). Mise en place du monitoring avec Grafana et Prometheus pour garantir la qualité et la performance du système.
 
-## Projets  open source
+## Projets open source
 
 ### Health4All - Développeur Principal
+
 Conception d'une solution d'analyse de données de santé utilisant Neo4j. Modélisation de graphes complexes (100+ nœuds) pour cartographier les interactions entre patients, pathologies, traitements et établissements de santé. Un projet qui allie données de santé et technologies de graphes pour améliorer la compréhension des parcours patients.
 
 ## Formation
@@ -79,10 +82,10 @@ ECE - École Centrale d'Électronique, Paris | 2024
 
 ## Restons connectés
 
-Je suis toujours intéressé par des Projets  ambitieux et des collaborations enrichissantes autour de l'IA et des données.
+Je suis toujours intéressé par des Projets ambitieux et des collaborations enrichissantes autour de l'IA et des données.
 
 📧 **Email** : fknguedia@gmail.com  
 💻 **GitHub** : [fkdia23](https://github.com/fkdia23)  
 🤗 **Hugging Face** : [fknguedia](https://huggingface.co/fknguedia)
 
-N'hésitez pas à me contacter pour discuter de vos Projets  data et IA !
+N'hésitez pas à me contacter pour discuter de vos Projets data et IA !

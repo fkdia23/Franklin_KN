@@ -44,14 +44,13 @@ export const SOCIALS: Social[] = [
 ] as const;
 
 export const SHARE_LINKS_PROJET: Social[] = [
-    {
+  {
     name: "GitHub",
     href: "https://github.com/fkdia23",
     linkTitle: `${SITE.title} on GitHub`,
     icon: IconGitHub,
   },
 ] as const;
-
 
 export const SHARE_LINKS: Social[] = [
   {
