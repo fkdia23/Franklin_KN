@@ -8,7 +8,6 @@ featured: true
 draft: false
 tags:
   - RAG
-  - Ursaff Caisse Nationale
 description: >
   Concevoir un système RAG capable de fournir des réponses précises,
   vérifiables et sourcées à partir de documents complexes, avec
