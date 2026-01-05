@@ -32,7 +32,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.DEPLOY_TOKEN }}
-          external_repository: fkdia23/fkdia23  # Remplacez par votre username GitHub
+          external_repository: fkdia23/fkdia23.github.io  # Remplacez par votre username GitHub
           publish_branch: main  # ou gh-pages
           publish_dir: ./dist  # Ajustez selon votre dossier de build (./dist, ./build, ./ pour la racine)
           user_name: 'github-actions[bot]'
