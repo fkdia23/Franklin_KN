@@ -20,23 +20,16 @@ Mes principaux domaines d’expertise :
   - Architectures RAG (LangChain, LangGraph)
   - Vector databases (FAISS, Milvus)
   - Fine-tuning (LoRA / QLoRA)
-  - Intégration de LLMs (OpenAI, Azure, Ollama)
 
 - **Data Engineering & DataOps**
-  - Pipelines ETL / ELT complexes (Azure Data Factory, Talend, dbt)
+  - Pipelines ETL / ELT complexes (Azure Data Factory, Apache Airflow)
   - Traitement Big Data (Spark, Hadoop, Kafka)
   - Modélisation Data Warehouse & Datamarts
-  - Gouvernance, qualité et traçabilité de la donnée (Data Catalog, Lineage)
 
 - **MLOps & DevOps**
   - Déploiement et monitoring de modèles IA
   - CI/CD, Docker, Kubernetes, Airflow
   - Observabilité (Grafana, Prometheus)
-
-- **Full-Stack IA**
-  - APIs backend (FastAPI, Express.js)
-  - Interfaces frontend (React, Next.js)
-  - Sécurisation des accès (RBAC)
 
 ---
 
