@@ -16,11 +16,6 @@ Je conçois et déploie des **solutions data end-to-end**, avec une approche ori
 
 Mes principaux domaines d’expertise :
 
-- **IA Générative & LLMs**
-  - Architectures RAG (LangChain, LangGraph)
-  - Vector databases (FAISS, Milvus)
-  - Fine-tuning (LoRA / QLoRA)
-
 - **Data Engineering & DataOps**
   - Pipelines ETL / ELT complexes (Azure Data Factory, Apache Airflow)
   - Traitement Big Data (Spark, Hadoop, Kafka)
@@ -30,6 +25,11 @@ Mes principaux domaines d’expertise :
   - Déploiement et monitoring de modèles IA
   - CI/CD, Docker, Kubernetes, Airflow
   - Observabilité (Grafana, Prometheus)
+
+- **IA Générative & LLMs**
+  - Architectures RAG (LangChain, LangGraph)
+  - Vector databases (FAISS, Milvus)
+  - Fine-tuning (LoRA / QLoRA)
 
 ---
 
