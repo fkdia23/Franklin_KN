@@ -49,7 +49,7 @@ Modernisation de l’écosystème décisionnel d’un acteur majeur du stockage 
 ---
 
 ### **Data Scientist – Likup Digital (Projet Copyly)**
-_Paris · 2022 – 2024_
+_À DISTANCE · 2022 – 2024_
 
 Développement d’une solution SaaS de génération de contenus marketing par IA, pensée pour l’échelle et la performance.
 
