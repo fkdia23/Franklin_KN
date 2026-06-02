@@ -79,15 +79,14 @@ const sortedPosts = getSortedPosts(posts);
       }
     </section>
 
-
     <!-- PROJECTS -->
     {
       sortedPosts.length > 0 && (
         <section id="projects" class="py-8">
-          <h2 class="text-2xl font-semibold tracking-wide mb-1">Mes dernières créations</h2>
-          <p class="mb-6 text-sm text-muted-foreground">
+          <h2 class="text-2xl font-semibold tracking-wide mb-1">Mes dernières projets</h2>
+          {/* <p class="mb-6 text-sm text-muted-foreground">
             Des projets que je construis par passion, jusqu'à la mise en production.
-          </p>
+          </p> */}
           <ul>
             {sortedPosts.map(
               (data, index) =>

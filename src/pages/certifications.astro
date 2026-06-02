@@ -2,7 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
-import Socials from "@/components/Socials.astro";
+import Contact from "@/components/Contact.astro";
 import { SITE } from "@/config";
 
 interface Cert {
@@ -73,21 +73,9 @@ const certs: Cert[] = [
 
     <!-- Contact -->
     <h2 class="mt-10 mb-4 text-lg font-semibold">Me contacter</h2>
-    <div
-      class="flex flex-col items-start gap-4 rounded-lg border border-border bg-muted/25 p-5 sm:flex-row sm:items-center sm:justify-between"
-    >
-      <p class="text-sm text-muted-foreground">
-        Curieux d'en savoir plus sur mon parcours ou un projet ? Écris-moi avec plaisir.
-      </p>
-      <div class="flex items-center gap-3">
-        <a
-          href="mailto:fknguedia@gmail.com"
-          class="rounded-md bg-accent px-4 py-2 text-sm font-medium text-background transition hover:opacity-90"
-        >
-          fknguedia@gmail.com
-        </a>
-        <Socials centered />
-      </div>
-    </div>
+    <p class="mb-4 text-sm text-muted-foreground">
+      Écris-moi avec plaisir.
+    </p>
+    <Contact />
   </main>
 </Layout>

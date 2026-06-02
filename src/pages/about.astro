@@ -2,7 +2,8 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
-import Socials from "@/components/Socials.astro";
+import Contact from "@/components/Contact.astro";
+import Lanyard from "@/components/Lanyard";
 import { SITE } from "@/config";
 
 const focus = [
@@ -74,6 +75,18 @@ const parcours = [
       coûts (FinOps) et pilotés par les métriques.
     </p>
 
+    <!-- 3D BADGE -->
+    <div
+      class="relative mt-8 h-[520px] w-full touch-none overflow-hidden rounded-xl border border-border bg-muted/20"
+    >
+      <Lanyard client:only="react" />
+      <span
+        class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 text-xs text-muted-foreground"
+      >
+        Attrape mon badge et relâche-le ✦
+      </span>
+    </div>
+
     <!-- Ce que je fais -->
     <h2 class="mt-10 mb-4 text-lg font-semibold">Ce que je fais</h2>
     <div class="grid gap-4 sm:grid-cols-2">
@@ -128,21 +141,9 @@ const parcours = [
 
     <!-- Contact -->
     <h2 class="mt-10 mb-4 text-lg font-semibold">Me contacter</h2>
-    <div
-      class="flex flex-col items-start gap-4 rounded-lg border border-border bg-muted/25 p-5 sm:flex-row sm:items-center sm:justify-between"
-    >
-      <p class="text-sm text-muted-foreground">
-        J'adore parler données, IA et belles architectures — écris-moi, on en discute avec plaisir.
-      </p>
-      <div class="flex items-center gap-3">
-        <a
-          href="mailto:fknguedia@gmail.com"
-          class="rounded-md bg-accent px-4 py-2 text-sm font-medium text-background transition hover:opacity-90"
-        >
-          fknguedia@gmail.com
-        </a>
-        <Socials centered />
-      </div>
-    </div>
+    <p class="mb-4 text-sm text-muted-foreground">
+       écris-moi, on discute, avec plaisir.
+    </p>
+    <Contact />
   </main>
 </Layout>
