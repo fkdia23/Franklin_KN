@@ -8,6 +8,7 @@ featured: true
 draft: false
 tags:
   - RAG
+github: https://github.com/fkdia23/RAG---Deep-Linking-Search
 description: >
   Concevoir un système RAG capable de fournir des réponses précises,
   vérifiables et sourcées à partir de documents complexes, avec

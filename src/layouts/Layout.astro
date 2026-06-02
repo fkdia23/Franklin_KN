@@ -1,8 +1,10 @@
 ---
 import { ClientRouter } from "astro:transitions";
-import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import "@/styles/global.css";
+
+const PUBLIC_GOOGLE_SITE_VERIFICATION = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
+const PUBLIC_PLAUSIBLE_DOMAIN = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
 
 export interface Props {
   title?: string;
@@ -124,6 +126,17 @@ const structuredData = {
         <meta
           name="google-site-verification"
           content={PUBLIC_GOOGLE_SITE_VERIFICATION}
+        />
+      )
+    }
+
+    {
+      PUBLIC_PLAUSIBLE_DOMAIN && (
+        <script
+          async
+          defer
+          data-domain={PUBLIC_PLAUSIBLE_DOMAIN}
+          src="https://plausible.io/js/plausible.js"
         />
       )
     }

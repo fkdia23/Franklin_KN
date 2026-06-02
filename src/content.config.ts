@@ -20,6 +20,11 @@ const blog = defineCollection({
       canonicalURL: z.string().optional(),
       hideEditPost: z.boolean().optional(),
       timezone: z.string().optional(),
+      // Liens projet affichés sur les cartes
+      github: z.string().url().optional(),
+      huggingface: z.string().url().optional(),
+      kaggle: z.string().url().optional(),
+      demo: z.string().url().optional(),
     }),
 });
 

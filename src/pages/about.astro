@@ -1,0 +1,148 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Socials from "@/components/Socials.astro";
+import { SITE } from "@/config";
+
+const focus = [
+  {
+    title: "Industrialisation Data",
+    desc: "J'automatise avec soin des pipelines ETL/ELT, pour une ingestion fiable et un DataOps sans accroc.",
+  },
+  {
+    title: "IA appliquée",
+    desc: "Je m'enthousiasme pour les systèmes RAG et les LLMs qui rendent l'information accessible aux métiers.",
+  },
+  {
+    title: "Qualité & suivi",
+    desc: "Je veille au grain : monitoring, observabilité et gouvernance dès la première ligne de code.",
+  },
+  {
+    title: "Performance & FinOps",
+    desc: "Je traque les coûts cloud et j'optimise sans relâche la performance des pipelines, métriques à l'appui.",
+  },
+];
+
+const stack = [
+  "Airflow",
+  "Azure Data Factory",
+  "Databricks",
+  "Spark",
+  "Kafka",
+  "Python",
+  "SQL",
+  "RAG / LLMs",
+  "LangChain",
+  "Neo4j",
+  "Docker",
+  "Kubernetes",
+  "Grafana",
+  "Prometheus",
+  "FinOps",
+  "Observabilité",
+];
+
+const parcours = [
+  {
+    role: "Data Engineer — Storengy France",
+    period: "2024 – 2025",
+    desc: "30+ pipelines ETL (Azure Data Factory, Talend), Data Warehouses, qualité des données & POC RAG.",
+  },
+  {
+    role: "Data Scientist — Likup Digital",
+    period: "2022 – 2024",
+    desc: "SaaS de génération de contenu IA : architecture RAG (Milvus/FAISS), fine-tuning LLM, multi-cloud.",
+  },
+  {
+    role: "Open source — Health4All",
+    period: "Développeur principal",
+    desc: "Modélisation de parcours patients en graphes Neo4j.",
+  },
+];
+---
+
+<Layout title={`À propos | ${SITE.title}`}>
+  <Header />
+  <Breadcrumb />
+  <main id="main-content" class="mx-auto w-full max-w-app px-4 pb-16">
+    <h1 class="text-2xl font-semibold sm:text-3xl">À propos</h1>
+    <p class="mt-3 max-w-2xl text-muted-foreground">
+      Je suis <strong class="text-foreground">Franklin KANA NGUEDIA</strong>, Data
+      &amp; AI Engineer passionné pour les nouvelles technologies et l'IA. Je conçois des pipelines data, des
+      systèmes RAG et des plateformes MLOps fiables, performants, maîtrisés côté
+      coûts (FinOps) et pilotés par les métriques.
+    </p>
+
+    <!-- Ce que je fais -->
+    <h2 class="mt-10 mb-4 text-lg font-semibold">Ce que je fais</h2>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        focus.map(item => (
+          <div class="rounded-lg border border-border bg-muted/25 p-5">
+            <h3 class="font-medium text-accent">{item.title}</h3>
+            <p class="mt-2 text-sm text-muted-foreground">{item.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Stack -->
+    <h2 class="mt-10 mb-4 text-lg font-semibold">Stack</h2>
+    <ul class="flex flex-wrap gap-2">
+      {
+        stack.map(s => (
+          <li class="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+            {s}
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- Parcours -->
+    <h2 class="mt-10 mb-4 text-lg font-semibold">Parcours</h2>
+    <div class="grid gap-4 sm:grid-cols-3">
+      {
+        parcours.map(p => (
+          <div class="rounded-lg border border-border bg-muted/25 p-5">
+            <h3 class="font-medium">{p.role}</h3>
+            <p class="mt-1 text-xs text-accent">{p.period}</p>
+            <p class="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Formation -->
+    <h2 class="mt-10 mb-4 text-lg font-semibold">Formation</h2>
+    <ul class="space-y-1 text-sm text-muted-foreground">
+      <li>
+        <strong class="text-foreground">MSc Data Engineering &amp; IA</strong> — ECE,
+        Paris
+      </li>
+      <li>
+        <strong class="text-foreground">Ingénieur en Informatique</strong> — École
+        Polytechnique de Yaoundé
+      </li>
+    </ul>
+
+    <!-- Contact -->
+    <h2 class="mt-10 mb-4 text-lg font-semibold">Me contacter</h2>
+    <div
+      class="flex flex-col items-start gap-4 rounded-lg border border-border bg-muted/25 p-5 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p class="text-sm text-muted-foreground">
+        J'adore parler données, IA et belles architectures — écris-moi, on en discute avec plaisir.
+      </p>
+      <div class="flex items-center gap-3">
+        <a
+          href="mailto:fknguedia@gmail.com"
+          class="rounded-md bg-accent px-4 py-2 text-sm font-medium text-background transition hover:opacity-90"
+        >
+          fknguedia@gmail.com
+        </a>
+        <Socials centered />
+      </div>
+    </div>
+  </main>
+</Layout>

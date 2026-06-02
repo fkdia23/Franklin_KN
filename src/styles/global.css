@@ -5,19 +5,23 @@
 
 :root,
 html[data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
-  --muted: #e6e6e6;
-  --border: #ece9e9;
+  /* Light — beige chaud assorti au thème charbon + ambre */
+  --background: #faf9f6;
+  --foreground: #1c1b19;
+  --accent: #8a5e12;
+  --muted: #efece4;
+  --muted-foreground: #6b6a63;
+  --border: #e3e0d7;
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --muted: #343f60;
-  --border: #ab4b08;
+  /* Dark — charbon + ambre */
+  --background: #18181b;
+  --foreground: #e8e6e1;
+  --accent: #d4a843;
+  --muted: #27272a;
+  --muted-foreground: #a1a09a;
+  --border: #3a3a40;
 }
 
 @theme inline {
@@ -25,6 +29,7 @@ html[data-theme="dark"] {
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
 }
 
