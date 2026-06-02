@@ -1,0 +1,81 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Contact from "@/components/Contact.astro";
+import { SITE } from "@/config";
+
+interface Cert {
+  title: string;
+  issuer: string;
+  desc: string;
+  links: { label: string; href: string }[];
+}
+
+const certs: Cert[] = [
+  {
+    title: "Machine Learning",
+    issuer: "Techaway",
+    desc: "Fondamentaux du ML : apprentissage supervisé / non supervisé, entraînement et évaluation de modèles.",
+    links: [
+      {
+        label: "Projet lié",
+        href: "https://github.com/fkdia23/text-to-sql-to-text",
+      },
+    ],
+  },
+  {
+    title: "MLOps Tools — MLflow & Hugging Face",
+    issuer: "MLOps",
+    desc: "Suivi d'expériences, versioning de modèles et déploiement / partage sur Hugging Face.",
+    links: [
+      { label: "Hugging Face", href: "https://huggingface.co/fknguedia" },
+      { label: "Projet MLOps", href: "https://github.com/fkdia23/kubeflow" },
+    ],
+  },
+];
+---
+
+<Layout title={`Certifications | ${SITE.title}`}>
+  <Header />
+  <Breadcrumb />
+  <main id="main-content" class="mx-auto w-full max-w-app px-4 pb-16">
+    <h1 class="text-2xl font-semibold sm:text-3xl">Certifications</h1>
+    <!-- <p class="mt-3 max-w-2xl text-muted-foreground">
+      Ma curiosité ne s'arrête jamais : voici mes certifications et leurs preuves
+      concrètes — chaque carte renvoie vers la ressource, un projet ou mon profil.
+    </p> -->
+
+    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+      {
+        certs.map(cert => (
+          <div class="flex flex-col rounded-lg border border-border bg-muted/25 p-5 transition-colors hover:border-accent/60">
+            <p class="text-xs text-accent">{cert.issuer}</p>
+            <h2 class="mt-1 font-medium">{cert.title}</h2>
+            <p class="mt-2 text-sm text-muted-foreground">{cert.desc}</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {cert.links.map(link => (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1 rounded-md border border-accent/40 px-2.5 py-1 text-xs font-medium text-accent transition-colors hover:bg-accent hover:text-background"
+                >
+                  {link.label}
+                  <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Contact -->
+    <h2 class="mt-10 mb-4 text-lg font-semibold">Me contacter</h2>
+    <p class="mb-4 text-sm text-muted-foreground">
+      Écris-moi avec plaisir.
+    </p>
+    <Contact />
+  </main>
+</Layout>

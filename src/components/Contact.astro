@@ -1,0 +1,78 @@
+---
+import QRCode from "qrcode";
+
+const CONTACTS = [
+  {
+    label: "Email",
+    value: "fknguedia@gmail.com",
+    href: "mailto:fknguedia@gmail.com",
+  },
+  { label: "GitHub", value: "@fkdia23", href: "https://github.com/fkdia23" },
+  {
+    label: "LinkedIn",
+    value: "in/franklin-kana-nguedia",
+    href: "https://www.linkedin.com/in/franklin-kana-nguedia",
+  },
+  {
+    label: "Hugging Face",
+    value: "@fknguedia",
+    href: "https://huggingface.co/fknguedia",
+  },
+];
+
+// Même vCard que le dos du badge — ajout du contact en un scan
+const vcard = [
+  "BEGIN:VCARD",
+  "VERSION:3.0",
+  "N:KANA NGUEDIA;Franklin",
+  "FN:Franklin KANA NGUEDIA",
+  "TITLE:Data & AI Engineer",
+  "EMAIL:fknguedia@gmail.com",
+  "URL:https://github.com/fkdia23",
+  "URL:https://www.linkedin.com/in/franklin-kana-nguedia",
+  "URL:https://huggingface.co/fknguedia",
+  "END:VCARD",
+].join("\n");
+
+const qr = await QRCode.toDataURL(vcard, {
+  margin: 1,
+  width: 320,
+  color: { dark: "#18181b", light: "#f4f2ec" },
+});
+---
+
+<div
+  class="grid gap-6 rounded-lg border border-border bg-muted/25 p-6 sm:grid-cols-[1fr_auto] sm:items-center"
+>
+  <ul class="space-y-3">
+    {
+      CONTACTS.map(c => (
+        <li>
+          <a
+            href={c.href}
+            target={c.href.startsWith("mailto:") ? undefined : "_blank"}
+            rel="noopener noreferrer"
+            class="group flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-3"
+          >
+            <span class="w-28 shrink-0 text-xs uppercase tracking-wide text-accent">
+              {c.label}
+            </span>
+            <span class="font-medium transition-colors group-hover:text-accent">
+              {c.value}
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <div class="flex flex-col items-center gap-2 justify-self-center sm:justify-self-end">
+    <img
+      src={qr}
+      alt="QR code — carte de visite de Franklin KANA NGUEDIA"
+      width="150"
+      height="150"
+      class="rounded-md border border-border"
+    />
+    <span class="text-xs text-muted-foreground">Scanne pour m'ajouter ✦</span>
+  </div>
+</div>
