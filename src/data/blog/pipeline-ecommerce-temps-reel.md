@@ -24,13 +24,11 @@ J'ai conçu un **pipeline Big Data temps réel** pour ingérer, transformer et r
 
 ---
 
-### 🚀 Les atouts clés du projet
+### Objectifs
 
 - **Architecture médaillon :** organisation des données en couches Bronze → Silver → Gold pour une qualité progressive.
 - **Bout en bout (E2E) :** de la base on-premise jusqu'à la visualisation Power BI.
 - **Gouvernance intégrée :** sécurité gérée via Azure Active Directory et Key Vaults.
-
-## Table of contents
 
 ## 1. Le défi : valoriser les données commerciales en continu
 

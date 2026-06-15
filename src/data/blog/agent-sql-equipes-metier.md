@@ -24,13 +24,9 @@ J'ai développé un **assistant SQL en langage naturel** permettant à des utili
 
 ---
 
-### 🚀 Les atouts clés du projet
-
 - **Langage naturel → SQL → réponse :** l'utilisateur pose sa question en français, l'agent génère la requête, l'exécute et restitue le résultat en langage clair.
 - **Sécurité renforcée :** validation des requêtes, gestion des permissions et logs d'audit.
 - **Architecture conteneurisée :** déploiement reproductible via Docker.
-
-## Table of contents
 
 ## 1. Le défi : la donnée reste prisonnière des équipes techniques
 

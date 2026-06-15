@@ -24,13 +24,10 @@ J'ai conçu un **assistant IA de type RAG (Retrieval-Augmented Generation)** rep
 
 ---
 
-### 🚀 Les atouts clés du projet
 
 - **RAG complet :** ingestion, indexation vectorielle et requêtes en langage naturel.
 - **Architecture modulaire :** FastAPI + base vectorielle + LangChain + PostgreSQL + Docker.
 - **Industrialisable :** service analytique conteneurisé, prêt à intégrer un système d'information.
-
-## Table of contents
 
 ## 1. Le défi : exploiter une documentation dense
 

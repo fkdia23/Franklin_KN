@@ -1,8 +1,8 @@
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
-import remarkToc from "remark-toc";
-import remarkCollapse from "remark-collapse";
+import { remarkReadingTime } from "./src/plugins/remark-reading-time";
+import { remarkAlerts } from "./src/plugins/remark-alerts";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -20,7 +20,7 @@ export default defineConfig({
     filter: page => SITE.showArchives || !page.endsWith("/archives"),
   }), react()],
   markdown: {
-    remarkPlugins: [remarkToc, [remarkCollapse, { test: "" }]],
+    remarkPlugins: [remarkReadingTime, remarkAlerts],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "night-owl" },

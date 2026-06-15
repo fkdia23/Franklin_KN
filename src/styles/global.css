@@ -67,6 +67,16 @@ html[data-theme="dark"] {
   @apply underline decoration-wavy decoration-2 underline-offset-4;
 }
 
+/* ===== Sommaire dynamique (scroll-spy) ===== */
+.toc a.toc-active {
+  @apply border-s-accent font-medium text-accent;
+}
+
+/* Masque le marqueur natif du <details> du sommaire mobile */
+details > summary.list-none::-webkit-details-marker {
+  display: none;
+}
+
 /* Source: https://piccalil.li/blog/a-more-modern-css-reset/ */
 /* Anything that has been anchored to should have extra scroll margin */
 :target {
