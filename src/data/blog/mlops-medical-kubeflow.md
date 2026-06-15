@@ -24,13 +24,10 @@ J'ai mis en place une **plateforme MLOps** automatisant l'intégralité du cycle
 
 ---
 
-### 🚀 Les atouts clés du projet
 
 - **Automatisation de bout en bout :** Jenkins + Kubeflow orchestrent l'ensemble du cycle de vie des modèles.
 - **Fiabilité 24/7 :** monitoring temps réel et **rollback instantané** en cas de dégradation.
 - **Amélioration continue :** boucle de réentraînement et de redéploiement automatisée.
-
-## Table of contents
 
 ## 1. Le défi : passer du POC au modèle industrialisé
 

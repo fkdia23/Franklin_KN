@@ -24,13 +24,10 @@ J'ai conçu et déployé des **modèles LLM spécialisés** sur des domaines mé
 
 ---
 
-### 🚀 Les atouts clés du projet
 
 - **Spécialisation métier :** adaptation d'un modèle généraliste à un vocabulaire et des tâches spécifiques par fine-tuning LoRA, sans réentraîner l'intégralité des poids.
 - **Déploiement hybride :** publication sur Hugging Face pour le partage et exécution locale via Ollama pour la confidentialité et la maîtrise des coûts.
 - **Industrialisation :** pipeline complet de la curation des données jusqu'au déploiement sécurisé.
-
-## Table of contents
 
 ## 1. Le défi : un modèle généraliste ne suffit pas pour un métier critique
 

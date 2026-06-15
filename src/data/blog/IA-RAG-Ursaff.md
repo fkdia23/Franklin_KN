@@ -28,8 +28,6 @@ J'ai développé un système **RAG (Retrieval-Augmented Generation)** de haute p
 - code source : https://github.com/fkdia23/RAG---Deep-Linking-Search
 - Démo: voir section 6
 
-## Table of contents
-
 ## **1. Le Défi : Pourquoi les réponses génériques ne suffisvent pas pour des données techniques complexes**
 
 - **Contexte** : Dans les domaines techniques (ingénierie, recherche, santé, droit), les utilisateurs ont besoin de **réponses exactes**, souvent **sourcées** et **vérifiables**.
