@@ -4,6 +4,27 @@ Data Engineer & AI Engineer | Apache Airflow, Spark, Kafka, RAG, Neo4j, LLM
 
 Je conçois des solutions data end-to-end et des architectures IA robustes pour transformer des données complexes en produits métier opérationnels.
 
+## Stratégie UI / UX & Branding
+
+- Ton clair, direct et professionnel, centré sur la valeur métier.
+- Identité visuelle minimaliste et contrastée : image soignée, typographie nette, accent couleur pour les actions.
+- Expérience orientée conversion : message fort en haut de page, preuves de compétence, appels à l’action visibles.
+- Navigation rapide : sections "Projets", "À propos" et liens utiles accessibles en un coup d’œil.
+- Lisibilité mobile-first : pages aérées, contenus scannables, blocs de compétences en bulles.
+- Cohérence de marque : même phrasing, mêmes éléments de positionnement et mêmes valeurs dans tous les futurs projets.
+
+## Base de branding pour futurs projets
+
+Utiliser cette structure comme modèle pour tous tes prochains projets :
+
+- Titre clair avec nom + spécialité
+- Sous-titre positionnant la proposition de valeur
+- Phrase d’accroche axée sur l’impact et la fiabilité
+- Liste de compétences techniques visibles dès l’arrivée
+- CTA vers les projets, la page À propos ou le contact
+- Liste de réalisations clés et bénéfices concrets
+- Liens utiles pour créer de la confiance et faciliter les prises de contact
+
 ## Ce que je fais
 
 - Industrialisation de pipelines ETL / ELT performants
