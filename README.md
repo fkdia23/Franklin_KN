@@ -4,6 +4,32 @@ Data Engineer & AI Engineer | Apache Airflow, Spark, Kafka, RAG, Neo4j, LLM
 
 Je conçois des solutions data end-to-end et des architectures IA robustes pour transformer des données complexes en produits métier opérationnels.
 
+## 🧭 Parcours & Formation
+
+> Frise chronologique de mon évolution — formation et expériences professionnelles.
+
+**●　20XX — aujourd'hui · Data & AI Engineer**
+`Entreprise / Mission`
+Pipelines Airflow, systèmes RAG et graphes Neo4j. Pilotage orienté observabilité et FinOps.
+
+`　│`
+
+**●　20XX — 20XX · Data Engineer**
+`Entreprise / Mission`
+Industrialisation de pipelines ETL/ELT, traitement Big Data (Spark, Kafka), DataOps.
+
+`　│`
+
+**●　20XX — 20XX · Master / Diplôme**
+`École / Université`
+Spécialisation data, machine learning et architectures distribuées.
+
+`　│`
+
+**●　20XX — 20XX · Licence / Formation initiale**
+`École / Université`
+Fondamentaux informatique, mathématiques et programmation.
+
 ## Stratégie UI / UX & Branding
 
 - Ton clair, direct et professionnel, centré sur la valeur métier.

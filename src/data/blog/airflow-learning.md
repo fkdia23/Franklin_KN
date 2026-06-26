@@ -4,6 +4,7 @@ description: "Exploration des concepts Apache Airflow à travers des projets pra
 pubDate: 2026-03-19
 updatedDate: 2026-03-19
 pubDatetime : 2026-03-19
+draft: false
 heroImage: "/assets/images/airflow.png"
 featured: true
 tags: ["Airflow", "Data Engineering", "Orchestration", "ETL/ELT"]
