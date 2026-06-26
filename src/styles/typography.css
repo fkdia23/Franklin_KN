@@ -47,6 +47,21 @@
       @apply mx-auto border border-border;
     }
 
+    /* ===== Vidéos & GIF dans les posts markdown ===== */
+    /* Vidéo auto-hébergée : <video class="post-video" ...> */
+    video {
+      @apply mx-auto my-6 block h-auto w-full max-w-full rounded-md border border-border;
+    }
+
+    /* Embed responsive 16:9 (YouTube, Vimeo…) : <div class="embed"><iframe …></div> */
+    .embed {
+      @apply relative my-6 w-full overflow-hidden rounded-md border border-border;
+      aspect-ratio: 16 / 9;
+    }
+    .embed iframe {
+      @apply absolute inset-0 h-full w-full border-0;
+    }
+
     figcaption {
       @apply opacity-75;
     }

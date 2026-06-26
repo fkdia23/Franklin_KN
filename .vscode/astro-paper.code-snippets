@@ -30,5 +30,61 @@
       "## ${3: heading 1}",
     ],
     "description": "Adds the template for the AstroPaper Blog post. You will need to trigger the snippet modal on the 'frontmatter' line to insert the other snipper."
+  },
+  "Vidéo (auto-hébergée)": {
+    "scope": "markdown",
+    "prefix": "video",
+    "body": [
+      "<video class=\"post-video\" controls preload=\"metadata\" poster=\"${2:/assets/videos/poster.jpg}\">",
+      "  <source src=\"${1:/assets/videos/demo.mp4}\" type=\"video/mp4\" />",
+      "  Votre navigateur ne supporte pas la vidéo.",
+      "</video>",
+    ],
+    "description": "Insère une vidéo MP4 auto-hébergée avec contrôles."
+  },
+  "GIF / vidéo en boucle": {
+    "scope": "markdown",
+    "prefix": "gifvideo",
+    "body": [
+      "<video class=\"post-video\" autoplay loop muted playsinline>",
+      "  <source src=\"${1:/assets/videos/demo.mp4}\" type=\"video/mp4\" />",
+      "</video>",
+    ],
+    "description": "Vidéo en boucle, type GIF (autoplay, muet) — plus légère qu'un .gif."
+  },
+  "GIF (image)": {
+    "scope": "markdown",
+    "prefix": "gif",
+    "body": ["![${2:description}](${1:/assets/images/demo.gif})"],
+    "description": "Insère un GIF animé comme image."
+  },
+  "Embed YouTube/Vimeo": {
+    "scope": "markdown",
+    "prefix": "embed",
+    "body": [
+      "<div class=\"embed\">",
+      "  <iframe src=\"https://www.youtube.com/embed/${1:VIDEO_ID}\" title=\"${2:Titre}\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+      "</div>",
+    ],
+    "description": "Embed responsive 16:9 d'une vidéo YouTube/Vimeo."
+  },
+  "Timeline accordéon": {
+    "scope": "markdown",
+    "prefix": "timeline",
+    "body": [
+      "<div class=\"timeline\">",
+      "",
+      "<details class=\"timeline-item\" open>",
+      "<summary><span class=\"timeline-date\">${1:2026-01}</span> <span class=\"timeline-title\">${2:Titre de l'étape}</span></summary>",
+      "<div class=\"timeline-body\">",
+      "",
+      "${3:Contenu en **markdown** : description, liens, listes…}",
+      "",
+      "</div>",
+      "</details>",
+      "",
+      "</div>",
+    ],
+    "description": "Insère une timeline accordéon (cartes dépliables)."
   }
 }

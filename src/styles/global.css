@@ -82,3 +82,121 @@ details > summary.list-none::-webkit-details-marker {
 :target {
   scroll-margin-block: 1rem;
 }
+
+/* ===== Timeline accordéon (utilisable directement dans les .md) ===== */
+.timeline {
+  position: relative;
+  /* padding-left: 1.75rem; */
+  /* width: 100%;
+  max-width: 40rem; */
+}
+/* Rail vertical */
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 0.4rem;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 2px;
+  background: var(--border);
+}
+/* Carte d'une étape (accordéon natif) — largeur uniforme */
+.timeline-item {
+  /* Annule les styles du <details> de sommaire (typography.css) */
+  display: block;
+  user-select: text;
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  background: var(--muted);
+  transition: border-color 0.2s ease;
+}
+/* Réaffiche les paragraphes (masqués par [&_p]:hidden du sommaire) */
+.timeline-body p {
+  display: block;
+}
+/* Pastille sur le rail */
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -1.45rem;
+  top: 1.05rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--background);
+}
+.timeline-item:hover,
+.timeline-item[open] {
+  border-color: var(--accent);
+}
+/* En-tête cliquable */
+.timeline-item > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+.timeline-item > summary::-webkit-details-marker {
+  display: none;
+}
+.timeline-item > summary::after {
+  content: "⌄";
+  margin-left: auto;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--muted-foreground);
+  transition: transform 0.2s ease;
+}
+.timeline-item[open] > summary::after {
+  transform: rotate(180deg);
+}
+.timeline-date {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: var(--background);
+  background: var(--accent);
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  white-space: nowrap;
+}
+.timeline-title {
+  color: var(--foreground);
+}
+/* Corps : hauteur homogène entre toutes les cartes ouvertes */
+.timeline-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 9.5rem;
+  padding: 0 1rem 0.85rem;
+  color: var(--muted-foreground);
+}
+.timeline-body > :first-child {
+  margin-top: 0;
+}
+.timeline-body > :last-child {
+  margin-bottom: 0;
+}
+/* Ouverture/fermeture animée (navigateurs récents, dégradation propre ailleurs) */
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  .timeline-item::details-content {
+    height: 0;
+    overflow: hidden;
+    transition:
+      height 0.3s ease,
+      content-visibility 0.3s allow-discrete;
+  }
+  .timeline-item[open]::details-content {
+    height: auto;
+  }
+}
