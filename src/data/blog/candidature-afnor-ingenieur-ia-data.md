@@ -92,8 +92,7 @@ rapide), puis déploiement **hybride** Hugging Face (modèle _gated_) + Ollama
 local. Spécialisation d'un LLM pour un domaine métier précis.
 
 
-![Modèle fine-tuné Qwen2.5-Coder — carte Hugging Face](src\assets\images\qwen-finetuning.png)
-
+![Modèle fine-tuné Qwen2.5-Coder — carte Hugging Face](src/assets/images/qwen-finetuning.png)
 - **Modèle :** <https://huggingface.co/fknguedia/qwen_2.5_coder_sqlagent_pilot>
 
 </div>
