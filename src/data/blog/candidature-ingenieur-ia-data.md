@@ -5,7 +5,7 @@ modDatetime: 2026-06-26T09:00:00.000Z
 title: "Candidature AFNOR — Ingénieur IA & Data : ma timeline projets"
 slug: candidature-afnor-ingenieur-ia-data
 featured: true
-draft: false
+draft: true
 tags:
   - Candidature
   - LLM
@@ -140,7 +140,7 @@ Orchestration d'un LLM exposant un _tool_ SQL sécurisé derrière une API.
   locaux**, attention aux enjeux **RGPD et de souveraineté** des données.
 - **Stack alignée** : **Python, JavaScript / Next.js**, FastAPI, Docker et
   **monitoring** (coûts, logs, performances) — transférable à l'écosystème
-  **Azure (Azure OpenAI, Azure DevOps)** d'AFNOR.
+  **Azure (Azure OpenAI, Azure DevOps)** 
 
 > Curieux, pédagogue et autonome : ces projets sont nés de besoins concrets,
 > documentés et conçus pour être repris en équipe.
