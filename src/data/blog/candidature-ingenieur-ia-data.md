@@ -2,7 +2,7 @@
 author: Franklin KANA NGUEDIA
 pubDatetime: 2026-06-26T09:00:00.000Z
 modDatetime: 2026-06-26T09:00:00.000Z
-title: "Candidature AFNOR — Ingénieur IA & Data : ma timeline projets"
+title: "Candidature — Ingénieur IA & Data : ma timeline projets"
 slug: candidature-afnor-ingenieur-ia-data
 featured: true
 draft: false
