@@ -15,7 +15,7 @@ tags:
 github: https://github.com/fkdia23
 description: >
   Sélection de 4 projets IA & Data présentés en timeline pour le poste
-  d'Ingénieur IA & Data au Pôle Innovation & Data Science d'AFNOR :
+  d'Ingénieur IA & Data au Pôle Innovation & Data Science :
   agents LLM, tools, APIs mutualisées, fine-tuning, RAG traçable et
   assistant conversationnel auto-hébergé.
 ---

@@ -2,10 +2,10 @@ export const SITE = {
   website: "https://fkdia23.github.io", // replace this with your deployed domain
   base: "Franklin_KN", // replace this with your repo name for github pages deployment
   author: "Franklin_KN",
-  profile: "https://satnaing.dev/",
-  desc: "A minimal, responsive and SEO-friendly Astro blog theme.",
+  profile: "https://www.linkedin.com/in/franklin-kana-nguedia",
+  desc: "Portfolio de Franklin KANA NGUEDIA — Data Engineer & AI Engineer : pipelines Airflow, systèmes RAG, graphes Neo4j, FinOps et observabilité.",
   title: "Home",
-  ogImage: "astropaper-og.jpg",
+  ogImage: "", // vide => image OG générée dynamiquement (/og.png)
   lightAndDarkMode: true,
   postPerIndex: 4,
   postPerPage: 4,
@@ -15,7 +15,7 @@ export const SITE = {
   editPost: {
     enabled: true,
     text: "Edit page",
-    url: "https://github.com/satnaing/astro-paper/edit/main/",
+    url: "https://github.com/fkdia23/Franklin_KN/edit/main/",
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
