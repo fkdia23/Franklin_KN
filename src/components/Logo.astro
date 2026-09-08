@@ -1,0 +1,40 @@
+---
+import {
+  LOGO_PATHS,
+  LOGO_RADIUS,
+  LOGO_STROKE,
+  LOGO_VIEWBOX,
+} from "@/utils/logo";
+
+export interface Props {
+  /** Côté du badge en pixels. */
+  size?: number;
+  class?: string;
+}
+
+const { size = 36, class: className } = Astro.props;
+---
+
+<svg
+  viewBox={LOGO_VIEWBOX}
+  width={size}
+  height={size}
+  role="img"
+  aria-label="franklin_kn"
+  class:list={["shrink-0", className]}
+>
+  <rect
+    width="128"
+    height="128"
+    rx={LOGO_RADIUS}
+    fill="var(--accent)"
+  />
+  <g
+    fill="none"
+    stroke="var(--background)"
+    stroke-width={LOGO_STROKE}
+    stroke-linejoin="round"
+  >
+    {LOGO_PATHS.map(d => <path d={d} />)}
+  </g>
+</svg>

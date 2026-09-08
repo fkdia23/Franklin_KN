@@ -1,6 +1,7 @@
 import satori from "satori";
 import { SITE } from "@/config";
 import loadGoogleFonts from "../loadGoogleFont";
+import { logoDataUri } from "../logo";
 
 export default async () => {
   return satori(
@@ -96,18 +97,29 @@ export default async () => {
                       props: {
                         style: {
                           display: "flex",
-                          justifyContent: "flex-end",
+                          alignItems: "center",
+                          justifyContent: "space-between",
                           width: "100%",
                           marginBottom: "8px",
                           fontSize: 28,
                         },
-                        children: {
-                          type: "span",
-                          props: {
-                            style: { overflow: "hidden", fontWeight: "bold" },
-                            children: new URL(SITE.website).hostname,
+                        children: [
+                          {
+                            type: "img",
+                            props: {
+                              src: logoDataUri("light"),
+                              width: 64,
+                              height: 64,
+                            },
                           },
-                        },
+                          {
+                            type: "span",
+                            props: {
+                              style: { overflow: "hidden", fontWeight: "bold" },
+                              children: new URL(SITE.website).hostname,
+                            },
+                          },
+                        ],
                       },
                     },
                   ],

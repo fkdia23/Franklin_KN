@@ -4,6 +4,7 @@ import Header from "@/components/Header.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import Contact from "@/components/Contact.astro";
 import Lanyard from "@/components/Lanyard";
+import Logo from "@/components/Logo.astro";
 import { SITE } from "@/config";
 
 const focus = [
@@ -67,7 +68,10 @@ const parcours = [
   <Header />
   <Breadcrumb />
   <main id="main-content" class="mx-auto w-full max-w-app px-4 pb-16">
-    <h1 class="text-2xl font-semibold sm:text-3xl">À propos</h1>
+    <div class="flex items-center gap-4">
+      <Logo size={52} />
+      <h1 class="text-2xl font-semibold sm:text-3xl">À propos</h1>
+    </div>
     <p class="mt-3 max-w-2xl text-muted-foreground">
       Je suis <strong class="text-foreground">Franklin KANA NGUEDIA</strong>, Data
       &amp; AI Engineer passionné pour les nouvelles technologies et l'IA. Je conçois des pipelines data, des

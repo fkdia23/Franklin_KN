@@ -1,5 +1,6 @@
 ---
 import Hr from "./Hr.astro";
+import Logo from "./Logo.astro";
 import IconX from "@/assets/icons/IconX.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
@@ -41,9 +42,10 @@ const isActive = (path: string) => {
     >
       <a
         href="/"
-        class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"
+        class="absolute py-1 transition-opacity hover:opacity-80 sm:static sm:my-auto"
+        aria-label="Franklin KANA NGUEDIA — accueil"
       >
-        {SITE.title}
+        <Logo size={38} />
       </a>
 
       <nav
