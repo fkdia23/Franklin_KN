@@ -1,21 +1,21 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
-import { getPath } from "@/utils/getPath";
-import getSortedPosts from "@/utils/getSortedPosts";
+import { getLocalizedPosts, getPostPath } from "@/utils/translations";
 import { SITE } from "@/config";
 
 export async function GET() {
   const posts = await getCollection("blog");
-  const sortedPosts = getSortedPosts(posts);
+  // Une version par post (le français quand il existe), chacune à sa bonne URL
+  const sortedPosts = getLocalizedPosts(posts, "fr");
   return rss({
     title: SITE.title,
     description: SITE.desc,
     site: SITE.website,
-    items: sortedPosts.map(({ data, id, filePath }) => ({
-      link: getPath(id, filePath),
-      title: data.title,
-      description: data.description,
-      pubDate: new Date(data.modDatetime ?? data.pubDatetime),
+    items: sortedPosts.map(post => ({
+      link: getPostPath(post),
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: new Date(post.data.modDatetime ?? post.data.pubDatetime),
     })),
   });
 }

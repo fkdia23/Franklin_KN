@@ -1,5 +1,6 @@
 ---
 import { render, type CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
@@ -10,8 +11,17 @@ import ShareLinks from "@/components/ShareLinks.astro";
 import BackButton from "@/components/BackButton.astro";
 import BackToTopButton from "@/components/BackToTopButton.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
-import { getPath } from "@/utils/getPath";
+import ArticleScripts from "@/components/ArticleScripts.astro";
+import PostCover from "@/components/PostCover.astro";
 import { slugifyStr } from "@/utils/slugify";
+import { categoriesFor } from "@/utils/categories";
+import {
+  getLocalizedPosts,
+  getPostPath,
+  getTranslation,
+  postGroup,
+} from "@/utils/translations";
+import { localizePath, otherLang, useTranslations } from "@/i18n/utils";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import { SITE } from "@/config";
@@ -34,11 +44,36 @@ const {
   timezone,
   tags,
   hideEditPost,
+  category,
+  lang,
+  cover,
+  coverAlt,
+  github,
+  huggingface,
+  kaggle,
+  demo,
 } = post.data;
 
 const { Content, headings, remarkPluginFrontmatter } = await render(post);
 
 const readingTime = remarkPluginFrontmatter?.readingTime as number | undefined;
+
+// L'interface suit la langue du post (son URL : /posts/… ou /en/posts/…)
+const t = useTranslations(lang);
+const CATEGORIES = categoriesFor(lang);
+
+const translation = getTranslation(post, posts);
+// Bouton de langue du header : la traduction, sinon la liste de l'autre langue
+const alternate = translation
+  ? getPostPath(translation)
+  : localizePath("/posts/", otherLang(lang));
+
+const projectLinks = [
+  { label: t("post.github"), href: github },
+  { label: t("post.huggingface"), href: huggingface },
+  { label: t("post.kaggle"), href: kaggle },
+  { label: t("post.demo"), href: demo },
+].filter((l): l is { label: string; href: string } => Boolean(l.href));
 
 let ogImageUrl: string | undefined;
 
@@ -49,12 +84,13 @@ if (typeof initOgImage === "string") {
   ogImageUrl = initOgImage.src; // Local asset
 }
 
-// Use dynamic OG image if enabled and no remote|local ogImage
-if (!ogImageUrl && SITE.dynamicOgImage) {
-  ogImageUrl = `${getPath(post.id, post.filePath)}/index.png`;
+// Aperçu généré (1200×630) si aucune image OG n'est fournie
+const isGeneratedOgImage = !ogImageUrl && SITE.dynamicOgImage;
+if (isGeneratedOgImage) {
+  ogImageUrl = `${getPostPath(post)}/og.jpg`;
 }
 
-// Resolve OG image URL (or fallback to SITE.ogImage / default `og.png`)
+// Resolve OG image URL (or fallback to SITE.ogImage / default `og.jpg`)
 const ogImage = ogImageUrl
   ? new URL(ogImageUrl, Astro.url.origin).href
   : undefined;
@@ -67,26 +103,36 @@ const layoutProps = {
   modDatetime,
   canonicalURL,
   ogImage,
+  ogImageAlt: title,
+  ogImageSize: isGeneratedOgImage ? { width: 1200, height: 630 } : undefined,
+  ogType: "article" as const,
+  lang,
+  // hreflang : seulement si le post existe dans les deux langues
+  alternates: translation
+    ? {
+        [lang]: getPostPath(post),
+        [translation.data.lang]: getPostPath(translation),
+      }
+    : null,
   scrollSmooth: true,
 };
 
 /* ========== Prev/Next Posts ========== */
+// Même ordre que la liste des posts de cette langue (une version par post)
 
-const allPosts = posts.map(({ data: { title }, id, filePath }) => ({
-  id,
-  title,
-  filePath,
-}));
+const allPosts = getLocalizedPosts(posts, lang);
 
-const currentPostIndex = allPosts.findIndex(a => a.id === post.id);
+const currentPostIndex = allPosts.findIndex(
+  p => postGroup(p) === postGroup(post)
+);
 
-const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
+const prevPost = currentPostIndex > 0 ? allPosts[currentPostIndex - 1] : null;
 const nextPost =
-  currentPostIndex !== allPosts.length ? allPosts[currentPostIndex + 1] : null;
+  currentPostIndex >= 0 ? (allPosts[currentPostIndex + 1] ?? null) : null;
 ---
 
 <Layout {...layoutProps}>
-  <Header />
+  <Header {alternate} />
   <BackButton />
   <main
     id="main-content"
@@ -96,36 +142,103 @@ const nextPost =
     ]}
     data-pagefind-body
   >
+    {/* 1. L'image d'abord : couverture du post, ou couverture générée */}
+    <figure class="overflow-hidden rounded-lg border border-border bg-muted">
+      {
+        cover ? (
+          <Image
+            src={cover}
+            alt={coverAlt ?? ""}
+            widths={[640, 960, 1280]}
+            sizes="(min-width: 768px) 736px, 100vw"
+            loading="eager"
+            class="w-full"
+          />
+        ) : (
+          <PostCover
+            {post}
+            widths={[640, 960]}
+            sizes="(min-width: 768px) 736px, 100vw"
+            class="aspect-video w-full"
+          />
+        )
+      }
+    </figure>
+
+    {/* 2. Puis le grand titre, la description et les informations */}
+    <p class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+      <a
+        href={`${localizePath("/posts/", lang)}?categorie=${category}`}
+        class="font-semibold tracking-wide text-accent uppercase hover:underline"
+      >
+        {CATEGORIES[category].label}
+      </a>
+      {
+        translation && (
+          <a
+            href={getPostPath(translation)}
+            hreflang={translation.data.lang}
+            lang={translation.data.lang}
+            class="text-sm text-muted-foreground transition-colors hover:text-accent"
+          >
+            {translation.data.lang === "en"
+              ? "Read in English"
+              : "Lire en français"}{" "}
+            <span aria-hidden="true">→</span>
+          </a>
+        )
+      }
+    </p>
     <h1
       transition:name={slugifyStr(title)}
-      class="inline-block text-2xl font-bold text-accent sm:text-3xl"
+      class="mt-3 inline-block text-[2rem] leading-[1.12] font-bold tracking-tight sm:text-[2.75rem]"
     >
       {title}
     </h1>
-    <div class="my-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+    <p class="mt-4 text-lg leading-relaxed text-muted-foreground sm:text-xl">
+      {description}
+    </p>
+    <div class="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1">
+      <Datetime {pubDatetime} {modDatetime} {timezone} {lang} size="lg" />
       {
         readingTime && (
           <>
             <span aria-hidden="true" class="text-muted-foreground">
-              |
+              ·
             </span>
             <span class="text-sm text-muted-foreground">
-              {readingTime} min de lecture
+              {readingTime} {t("post.minRead")}
             </span>
           </>
         )
       }
     </div>
+    {
+      projectLinks.length > 0 && (
+        <div class="mt-5 flex flex-wrap gap-2">
+          {projectLinks.map(link => (
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-secondary py-1.5"
+            >
+              {link.label}
+              <span aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      )
+    }
 
     {/* Sommaire repliable — petits écrans */}
     <details
-      class="group mt-6 rounded-md border border-border bg-muted/30 px-4 py-3 xl:hidden"
+      class="group mt-6 rounded-md border border-border bg-muted/30 px-4 py-3 min-[1340px]:hidden"
     >
       <summary
         class="cursor-pointer list-none text-sm font-semibold tracking-wide text-foreground uppercase select-none"
       >
-        Sur cette page
+        {t("toc.title")}
       </summary>
       <div class="mt-3">
         <TableOfContents {headings} heading={false} />
@@ -150,7 +263,7 @@ const nextPost =
       </aside>
     </div>
 
-    <hr class="my-8 border-dashed" />
+    <hr class="my-8 border-border" />
 
     <EditPost class="sm:hidden" {hideEditPost} {post} />
 
@@ -169,13 +282,13 @@ const nextPost =
       {
         prevPost && (
           <a
-            href={getPath(prevPost.id, prevPost.filePath)}
+            href={getPostPath(prevPost)}
             class="flex w-full gap-1 hover:opacity-75"
           >
             <IconChevronLeft class="inline-block flex-none rtl:rotate-180" />
             <div>
-              <span>Previous Post</span>
-              <div class="text-sm text-accent/85">{prevPost.title}</div>
+              <span>{t("post.prev")}</span>
+              <div class="text-sm text-accent/85">{prevPost.data.title}</div>
             </div>
           </a>
         )
@@ -183,12 +296,12 @@ const nextPost =
       {
         nextPost && (
           <a
-            href={getPath(nextPost.id, nextPost.filePath)}
+            href={getPostPath(nextPost)}
             class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
           >
             <div>
-              <span>Next Post</span>
-              <div class="text-sm text-accent/85">{nextPost.title}</div>
+              <span>{t("post.next")}</span>
+              <div class="text-sm text-accent/85">{nextPost.data.title}</div>
             </div>
             <IconChevronRight class="inline-block flex-none rtl:rotate-180" />
           </a>
@@ -199,171 +312,4 @@ const nextPost =
   <Footer />
 </Layout>
 
-<script is:inline data-astro-rerun>
-  /** Create a progress indicator
-   *  at the top */
-  function createProgressBar() {
-    // Create the main container div
-    const progressContainer = document.createElement("div");
-    progressContainer.className =
-      "progress-container fixed top-0 z-10 h-1 w-full bg-background";
-
-    // Create the progress bar div
-    const progressBar = document.createElement("div");
-    progressBar.className = "progress-bar h-1 w-0 bg-accent";
-    progressBar.id = "myBar";
-
-    // Append the progress bar to the progress container
-    progressContainer.appendChild(progressBar);
-
-    // Append the progress container to the document body or any other desired parent element
-    document.body.appendChild(progressContainer);
-  }
-  createProgressBar();
-
-  /** Update the progress bar
-   *  when user scrolls */
-  function updateScrollProgress() {
-    document.addEventListener("scroll", () => {
-      const winScroll =
-        document.body.scrollTop || document.documentElement.scrollTop;
-      const height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      if (document) {
-        const myBar = document.getElementById("myBar");
-        if (myBar) {
-          myBar.style.width = scrolled + "%";
-        }
-      }
-    });
-  }
-  updateScrollProgress();
-
-  /** Attaches links to headings in the document,
-   *  allowing sharing of sections easily */
-  function addHeadingLinks() {
-    const headings = Array.from(
-      document.querySelectorAll("h2, h3, h4, h5, h6")
-    );
-    for (const heading of headings) {
-      heading.classList.add("group");
-      const link = document.createElement("a");
-      link.className =
-        "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
-      link.href = "#" + heading.id;
-
-      const span = document.createElement("span");
-      span.ariaHidden = "true";
-      span.innerText = "#";
-      link.appendChild(span);
-      heading.appendChild(link);
-    }
-  }
-  addHeadingLinks();
-
-  /** Attaches copy buttons to code blocks in the document,
-   * allowing users to copy code easily. */
-  function attachCopyButtons() {
-    const copyButtonLabel = "Copy";
-    const codeBlocks = Array.from(document.querySelectorAll("pre"));
-
-    for (const codeBlock of codeBlocks) {
-      const wrapper = document.createElement("div");
-      wrapper.style.position = "relative";
-
-      // Check if --file-name-offset custom property exists
-      const computedStyle = getComputedStyle(codeBlock);
-      const hasFileNameOffset =
-        computedStyle.getPropertyValue("--file-name-offset").trim() !== "";
-
-      // Determine the top positioning class
-      const topClass = hasFileNameOffset
-        ? "top-(--file-name-offset)"
-        : "-top-3";
-
-      const copyButton = document.createElement("button");
-      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
-      copyButton.innerHTML = copyButtonLabel;
-      codeBlock.setAttribute("tabindex", "0");
-      codeBlock.appendChild(copyButton);
-
-      // wrap codebock with relative parent element
-      codeBlock?.parentNode?.insertBefore(wrapper, codeBlock);
-      wrapper.appendChild(codeBlock);
-
-      copyButton.addEventListener("click", async () => {
-        await copyCode(codeBlock, copyButton);
-      });
-    }
-
-    async function copyCode(block, button) {
-      const code = block.querySelector("code");
-      const text = code?.innerText;
-
-      await navigator.clipboard.writeText(text ?? "");
-
-      // visual feedback that task is completed
-      button.innerText = "Copied";
-
-      setTimeout(() => {
-        button.innerText = copyButtonLabel;
-      }, 700);
-    }
-  }
-  attachCopyButtons();
-
-  /** Sommaire dynamique : surligne la section visible
-   *  pendant le défilement (scroll-spy). */
-  function setupTableOfContents() {
-    const links = Array.from(document.querySelectorAll("[data-toc-link]"));
-    if (!links.length) return;
-
-    const headings = links
-      .map(link => document.getElementById(link.getAttribute("data-toc-link")))
-      .filter(Boolean);
-
-    let activeId = null;
-    function setActive(id) {
-      if (id === activeId) return;
-      activeId = id;
-      for (const link of links) {
-        const isActive = link.getAttribute("data-toc-link") === id;
-        link.classList.toggle("toc-active", isActive);
-        if (isActive) {
-          link.setAttribute("aria-current", "true");
-        } else {
-          link.removeAttribute("aria-current");
-        }
-      }
-    }
-
-    let ticking = false;
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        let current = headings[0]?.id ?? null;
-        for (const heading of headings) {
-          if (heading.getBoundingClientRect().top <= 120) {
-            current = heading.id;
-          } else {
-            break;
-          }
-        }
-        setActive(current);
-        ticking = false;
-      });
-    }
-
-    document.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-  }
-  setupTableOfContents();
-
-  /* Go to page start after page swap */
-  document.addEventListener("astro:after-swap", () =>
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
-  );
-</script>
+<ArticleScripts />

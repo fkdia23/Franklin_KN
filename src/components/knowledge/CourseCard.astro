@@ -1,0 +1,53 @@
+---
+import StatusBadge from "./StatusBadge.astro";
+import ProgressBars from "./ProgressBars.astro";
+import type { CourseItem } from "@/utils/knowledge";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+export interface Props {
+  course: CourseItem;
+}
+
+const { course } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
+const { title, status } = course;
+const { description, provider } = course.entry.data;
+const { total } = course.progress;
+---
+
+<li
+  class="group relative flex flex-col rounded-lg border border-border p-4 transition-colors hover:border-accent/60"
+>
+  <p class="flex flex-wrap items-center justify-between gap-2">
+    <StatusBadge {status} published={course.published} />
+    <span class="text-xs text-muted-foreground">
+      {total} module{total > 1 ? "s" : ""}
+    </span>
+  </p>
+  <h3 class="mt-2 text-lg leading-snug font-semibold tracking-tight">
+    <a
+      href={course.url}
+      class="transition-colors group-hover:text-accent after:absolute after:inset-0 after:content-['']"
+    >
+      {title}
+    </a>
+  </h3>
+  {provider && <p class="text-sm text-muted-foreground">{provider}</p>}
+  {
+    description && (
+      <p class="mt-1.5 line-clamp-3 text-sm text-muted-foreground">
+        {description}
+      </p>
+    )
+  }
+  {
+    total > 0 && (
+      <ProgressBars
+        class="mt-auto pt-4"
+        rows={[{ ...course.progress, label: t("k.progress") }]}
+        color={course.track.color}
+        counts
+      />
+    )
+  }
+</li>

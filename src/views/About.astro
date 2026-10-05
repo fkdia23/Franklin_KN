@@ -1,0 +1,182 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Lanyard from "@/components/Lanyard";
+import Wordmark from "@/components/Wordmark.astro";
+import portrait from "@/assets/images/portrait.jpg";
+import { getLangFromUrl, localizePath, useTranslations } from "@/i18n/utils";
+import { SITE } from "@/config";
+import { SOCIALS } from "@/constants";
+import WordmarkCore from "@/components/Wordmark_core.astro";
+
+/** Page À propos — /about/ et /en/about/. Bio écrite à la première personne. */
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const link =
+  "text-accent underline decoration-accent/35 underline-offset-[3px] hover:decoration-accent";
+const external = { target: "_blank", rel: "noopener noreferrer" };
+
+const linkedin = SOCIALS.find(s => s.name === "LinkedIn")?.href;
+const github = SOCIALS.find(s => s.name === "GitHub")?.href;
+const postsHref = localizePath("/posts/", lang);
+
+const a = (href: string | undefined, label: string, out = false) =>
+  `<a href="${href}" class="${link}"${out ? ' target="_blank" rel="noopener noreferrer"' : ""}>${label}</a>`;
+
+/** Présentation, à la première personne (un paragraphe par ligne). */
+const bio = {
+  fr: [
+    `Je suis ${SITE.name}, Data &amp; AI Engineer. Je conçois des pipelines de données et des systèmes d'IA destinés à la production : fiables, observables et maîtrisés en coûts.`,
+    `J'ai notamment conçu l'architecture RAG d'une plateforme SaaS de génération de contenu chez Likup Digital, puis développé plus de 30 pipelines ETL (Azure Data Factory, Talend) chez Storengy France. Je suis aussi le développeur principal du projet open source Health4All, qui modélise des parcours patients sous forme de graphes Neo4j.`,
+    `Titulaire d'un MSc Data Engineering &amp; IA (ECE Paris) et ingénieur en informatique (École Polytechnique de Yaoundé), je publie sur ce site mes ${a(postsHref, "projets")}, mes hackathons et des analyses de solutions gagnantes de compétitions Kaggle.`,
+    `Retrouvez-moi sur ${a(linkedin, "LinkedIn", true)} et ${a(github, "GitHub", true)} (@fkdia23).`,
+  ],
+  en: [
+    `I'm ${SITE.name}, a Data &amp; AI Engineer. I design data pipelines and AI systems built for production: reliable, observable and cost-efficient.`,
+    `I designed the RAG architecture of a content-generation SaaS platform at Likup Digital, then built more than 30 ETL pipelines (Azure Data Factory, Talend) at Storengy France. I'm also the lead developer of Health4All, an open-source project that models patient pathways as Neo4j graphs.`,
+    `I hold an MSc in Data Engineering &amp; AI (ECE Paris) and a computer engineering degree (École Polytechnique de Yaoundé). On this site, I share my ${a(postsHref, "projects")}, hackathons and analyses of winning Kaggle solutions.`,
+    `Find me on ${a(linkedin, "LinkedIn", true)} and ${a(github, "GitHub", true)} (@fkdia23).`,
+  ],
+}[lang];
+
+const copy = {
+  fr: {
+    description: `${SITE.name}, Data & AI Engineer : pipelines de données, systèmes RAG, agents LLM et fine-tuning.`,
+    alt: `Portrait de ${SITE.name}`,
+    badgeHint: "Attrapez le badge pour le faire bouger",
+    certifications: "Certifications :",
+    see: "Voir :",
+  },
+  en: {
+    description: `${SITE.name}, Data & AI Engineer: data pipelines, RAG systems, LLM agents and fine-tuning.`,
+    alt: `Portrait of ${SITE.name}`,
+    badgeHint: "Grab the badge and move it",
+    certifications: "Certifications:",
+    see: "See:",
+  },
+}[lang];
+
+const certs = [
+  {
+    title: "Machine Learning",
+    issuer: "Techaway",
+    links: [
+      {
+        label: { fr: "projet associé", en: "related project" }[lang],
+        href: "https://github.com/fkdia23/text-to-sql-to-text",
+      },
+    ],
+  },
+  {
+    title: "MLOps Tools — MLflow & Hugging Face",
+    issuer: "MLOps",
+    links: [
+      {
+        label: { fr: "modèles Hugging Face", en: "Hugging Face models" }[lang],
+        href: "https://huggingface.co/fknguedia",
+      },
+      {
+        label: { fr: "projet MLOps", en: "MLOps project" }[lang],
+        href: "https://github.com/fkdia23/kubeflow",
+      },
+    ],
+  },
+];
+---
+
+<Layout
+  title={`${t("nav.about")} | ${SITE.title}`}
+  description={copy.description}
+>
+  <Header />
+  <main
+    id="main-content"
+    class="mx-auto w-full max-w-4xl px-4 pt-8 pb-16 sm:pt-12"
+  >
+    <div class="grid gap-8 md:grid-cols-[19rem_1fr] md:gap-0">
+      <!-- Colonne gauche : badge 3D, nom, liens -->
+      <div
+        class="flex flex-col items-center md:border-e md:border-border md:pe-8"
+      >
+        <div
+          class="relative h-[24rem] w-full max-w-[19rem] touch-none sm:h-[26rem]"
+          title={copy.badgeHint}
+        >
+          <Lanyard
+            client:only="react"
+            photo={portrait.src}
+            alt={copy.alt}
+            {lang}
+          >
+            <Image
+              slot="fallback"
+              src={portrait}
+              alt={copy.alt}
+              widths={[304, 608]}
+              sizes="304px"
+              class="mx-auto mt-10 aspect-square w-full max-w-[19rem] rounded-md object-cover"
+            />
+          </Lanyard>
+        </div>
+
+        <h1
+          class="mt-2 text-center text-[2rem] leading-tight font-bold tracking-tight"
+        >
+          <WordmarkCore />
+        </h1>
+
+        <ul class="mt-4 flex flex-wrap justify-center gap-2">
+          {
+            SOCIALS.map(social => (
+              <li>
+                <a
+                  href={social.href}
+                  class="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-sm transition-colors hover:border-accent hover:text-accent [&>svg]:size-4 [&>svg]:stroke-[1.75]"
+                  {...(social.href.startsWith("http") && external)}
+                >
+                  <social.icon aria-hidden="true" />
+                  {social.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Colonne droite : présentation, à la première personne -->
+      <div class="md:ps-8">
+        <div class="space-y-4 text-[1.0625rem] leading-relaxed">
+          {bio.map(paragraph => <p set:html={paragraph} />)}
+        </div>
+
+        <hr class="my-6 border-border" />
+
+        <div class="text-[0.95rem] text-muted-foreground italic">
+          <h2 id="certifications" class="mb-3">{copy.certifications}</h2>
+          <ul class="list-disc space-y-2 ps-6">
+            {
+              certs.map(cert => (
+                <li>
+                  <span class="text-foreground">{cert.title}</span> —{" "}
+                  {cert.issuer}. {copy.see}{" "}
+                  <Fragment
+                    set:html={cert.links
+                      .map(
+                        l =>
+                          `<a href="${l.href}" target="_blank" rel="noopener noreferrer" class="${link}">${l.label}</a>`
+                      )
+                      .join(", ")}
+                  />
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>

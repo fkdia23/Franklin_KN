@@ -1,0 +1,80 @@
+---
+import { getCollection } from "astro:content";
+import Main from "@/layouts/Main.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Card from "@/components/Card.astro";
+import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
+import { getLocalizedPosts } from "@/utils/translations";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import { SITE } from "@/config";
+
+/** Archives — /archives/ et /en/archives/. */
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const posts = getLocalizedPosts(await getCollection("blog"), lang);
+
+const months = Array.from({ length: 12 }, (_, month) => {
+  const name = new Date(Date.UTC(2026, month, 1)).toLocaleDateString(
+    lang === "fr" ? "fr-FR" : "en-US",
+    { month: "long", timeZone: "UTC" }
+  );
+  return name.charAt(0).toUpperCase() + name.slice(1);
+});
+---
+
+<Layout
+  title={`${t("archives.title")} | ${SITE.title}`}
+  description={t("archives.description")}
+>
+  <Header />
+  <Main pageTitle={t("archives.title")} pageDesc={t("archives.description")}>
+    {
+      Object.entries(
+        getPostsByGroupCondition(posts, post =>
+          post.data.pubDatetime.getFullYear()
+        )
+      )
+        .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
+        .map(([year, yearGroup]) => (
+          <div>
+            <span class="text-2xl font-bold">{year}</span>
+            <sup class="text-sm">{yearGroup.length}</sup>
+            {Object.entries(
+              getPostsByGroupCondition(
+                yearGroup,
+                post => post.data.pubDatetime.getMonth() + 1
+              )
+            )
+              .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
+              .map(([month, monthGroup]) => (
+                <div class="flex flex-col sm:flex-row">
+                  <div class="mt-6 min-w-36 text-lg sm:my-6">
+                    <span class="font-bold">{months[Number(month) - 1]}</span>
+                    <sup class="text-xs">{monthGroup.length}</sup>
+                  </div>
+                  <ul>
+                    {monthGroup
+                      .sort(
+                        (a, b) =>
+                          Math.floor(
+                            new Date(b.data.pubDatetime).getTime() / 1000
+                          ) -
+                          Math.floor(
+                            new Date(a.data.pubDatetime).getTime() / 1000
+                          )
+                      )
+                      .map(post => (
+                        <Card {post} />
+                      ))}
+                  </ul>
+                </div>
+              ))}
+          </div>
+        ))
+    }
+  </Main>
+  <Footer />
+</Layout>

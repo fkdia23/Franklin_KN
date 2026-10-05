@@ -1,0 +1,63 @@
+---
+import StatusBadge from "./StatusBadge.astro";
+import { formatDate, type EntryItem } from "@/utils/knowledge";
+import { getLangFromUrl } from "@/i18n/utils";
+
+export interface Props {
+  items: EntryItem[];
+}
+
+const { items } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+---
+
+<ul class="divide-y divide-border border-y border-border">
+  {
+    items.map(item => {
+      const { data } = item.entry;
+      const external = !item.url && Boolean(item.href);
+      const meta = [data.authors, data.year].filter(Boolean).join(", ");
+      // Journal sans titre : la date est déjà le titre, pas de colonne date
+      const dateIsTitle =
+        item.date && item.title === formatDate(item.date, lang);
+      return (
+        <li class="flex flex-col gap-1 py-3.5 sm:flex-row sm:gap-5">
+          {item.date && !dateIsTitle && (
+            <time
+              datetime={item.date.toISOString()}
+              class="shrink-0 pt-0.5 text-sm text-muted-foreground tabular-nums sm:w-28"
+            >
+              {formatDate(item.date, lang)}
+            </time>
+          )}
+          <div class="min-w-0 flex-1">
+            <p class="flex flex-wrap items-center gap-x-2 gap-y-1">
+              {item.href ? (
+                <a
+                  href={item.href}
+                  class="font-medium transition-colors hover:text-accent"
+                  {...(external && {
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  })}
+                >
+                  {item.title}
+                  {external && <span aria-hidden="true"> ↗</span>}
+                </a>
+              ) : (
+                <span class="font-medium">{item.title}</span>
+              )}
+              <StatusBadge status={item.status} published={item.published} />
+            </p>
+            {meta && <p class="text-sm text-muted-foreground">{meta}</p>}
+            {data.description && (
+              <p class="mt-0.5 text-sm text-muted-foreground">
+                {data.description}
+              </p>
+            )}
+          </div>
+        </li>
+      );
+    })
+  }
+</ul>

@@ -1,6 +1,7 @@
 ---
-import Hr from "./Hr.astro";
-import Socials from "./Socials.astro";
+import { SITE } from "@/config";
+import { SOCIALS } from "@/constants";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 
 const currentYear = new Date().getFullYear();
 
@@ -9,18 +10,45 @@ export interface Props {
 }
 
 const { noMarginTop = false } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
-<footer class:list={["w-full", { "mt-auto": !noMarginTop }]}>
-  <Hr noPadding />
-  <div
-    class="flex flex-col items-center justify-between py-6 sm:flex-row-reverse sm:py-4"
-  >
-    <Socials centered />
-    <div class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row">
-      <span>Copyright &#169; {currentYear}</span>
-      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-      <span>All rights reserved.</span>
-    </div>
+<footer
+  class:list={[
+    "w-full max-w-none border-t border-border px-4",
+    { "mt-auto": !noMarginTop },
+  ]}
+>
+  <div class="flex flex-col items-center gap-3 py-6">
+    <!-- Réseaux : surtout utiles sur mobile, où le header ne les affiche pas -->
+    <!-- <ul class="flex items-center gap-1" aria-label={t("nav.socials")}>
+      {
+        SOCIALS.map(social => (
+          <li>
+            <a
+              href={social.href}
+              class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground [&>svg]:size-[1.1rem] [&>svg]:stroke-[1.75]"
+              title={social.linkTitle}
+              aria-label={social.linkTitle}
+              {...(social.href.startsWith("http") && {
+                target: "_blank",
+                rel: "noopener noreferrer",
+              })}
+            >
+              <social.icon />
+            </a>
+          </li>
+        ))
+      }
+    </ul> -->
+    <p
+      class="flex flex-wrap items-center justify-center gap-x-2 text-sm text-muted-foreground"
+    >
+      <span>© {currentYear} {SITE.title}</span>
+      <span aria-hidden="true">·</span>
+      <a href="/rss.xml" class="transition-colors hover:text-foreground"
+        >{t("footer.rss")}</a
+      >
+    </p>
   </div>
 </footer>

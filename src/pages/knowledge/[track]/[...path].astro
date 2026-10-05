@@ -1,0 +1,18 @@
+---
+import KnowledgePage from "@/views/knowledge/KnowledgePage.astro";
+import { getKnowledgeRoutes } from "@/utils/knowledge";
+
+/**
+ * Tout ce qui se trouve sous /knowledge/<track>/ : cours, modules, sections
+ * et entrées (voir src/views/knowledge/KnowledgePage.astro).
+ */
+export async function getStaticPaths() {
+  const routes = await getKnowledgeRoutes("fr");
+  return routes.map(({ track, path, route }) => ({
+    params: { track, path },
+    props: { route },
+  }));
+}
+---
+
+<KnowledgePage {...Astro.props} />

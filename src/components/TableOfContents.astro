@@ -1,5 +1,6 @@
 ---
 import type { MarkdownHeading } from "astro";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 
 interface Props {
   headings: MarkdownHeading[];
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const { headings, class: className = "", heading = true } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 // On ne garde que les niveaux h2 → h4 pour un sommaire épuré
 const toc = headings.filter(h => h.depth >= 2 && h.depth <= 4);
@@ -19,17 +21,15 @@ const minDepth = toc.length ? Math.min(...toc.map(h => h.depth)) : 2;
 {
   toc.length > 0 && (
     <nav
-      aria-label="Sommaire"
+      aria-label={t("toc.label")}
       data-pagefind-ignore
       class:list={["toc text-sm", className]}
     >
-      {
-        heading && (
-          <h2 class="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-            Sur cette page
-          </h2>
-        )
-      }
+      {heading && (
+        <h2 class="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          {t("toc.title")}
+        </h2>
+      )}
       <ul class="space-y-1 border-s border-border">
         {toc.map(h => (
           <li style={`--toc-indent:${(h.depth - minDepth) * 0.75}rem`}>

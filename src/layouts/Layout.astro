@@ -1,9 +1,20 @@
 ---
 import { ClientRouter } from "astro:transitions";
 import { SITE } from "@/config";
+import { createHash } from "node:crypto";
+import { THEME_NAME, themeCss } from "@/utils/theme";
+import { logoAdaptiveSvg } from "@/utils/logo";
+import {
+  LANGS,
+  getLangFromUrl,
+  localizePath,
+  useTranslations,
+  type Lang,
+} from "@/i18n/utils";
 import "@/styles/global.css";
 
-const PUBLIC_GOOGLE_SITE_VERIFICATION = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
+const PUBLIC_GOOGLE_SITE_VERIFICATION = import.meta.env
+  .PUBLIC_GOOGLE_SITE_VERIFICATION;
 const PUBLIC_PLAUSIBLE_DOMAIN = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
 
 export interface Props {
@@ -12,54 +23,143 @@ export interface Props {
   profile?: string;
   description?: string;
   ogImage?: string;
+  /** Texte alternatif de l'image d'aperçu. */
+  ogImageAlt?: string;
+  /** Dimensions de l'image d'aperçu, quand on les connaît (images générées). */
+  ogImageSize?: { width: number; height: number };
+  ogType?: "website" | "article";
   canonicalURL?: string;
   pubDatetime?: Date;
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
+  /** Langue de la page (sinon déduite de l’URL : /en/… = anglais). */
+  lang?: Lang;
+  /**
+   * Versions de la page dans chaque langue (balises hreflang). Par défaut :
+   * même chemin, préfixe de langue différent. `null` : page sans équivalent.
+   */
+  alternates?: Partial<Record<Lang, string>> | null;
 }
+
+const GENERATED_OG_SIZE = { width: 1200, height: 630 };
+
+// Empreinte de l'icône : change l'URL du favicon dès que l'icône change,
+// sinon les navigateurs gardent l'ancienne en cache
+const iconVersion = createHash("sha1")
+  .update(logoAdaptiveSvg())
+  .digest("hex")
+  .slice(0, 8);
+
+const urlLang = getLangFromUrl(Astro.url);
 
 const {
   title = SITE.title,
   author = SITE.author,
   profile = SITE.profile,
-  description = SITE.desc,
-  ogImage = SITE.ogImage ? `/${SITE.ogImage}` : "/og.png",
+  description = useTranslations(Astro.props.lang ?? urlLang)(
+    "site.description"
+  ),
+  ogImage: pageOgImage,
+  ogImageAlt = `${SITE.name} — ${SITE.role}`,
+  ogType = "website",
   canonicalURL = new URL(Astro.url.pathname, Astro.url),
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
+  lang = urlLang,
 } = Astro.props;
 
-const socialImageURL = new URL(ogImage, Astro.url);
+// Balises hreflang : les deux langues ont la même structure d'URL
+const alternates =
+  Astro.props.alternates === undefined
+    ? Object.fromEntries(
+        LANGS.map(code => [code, localizePath(Astro.url.pathname, code)])
+      )
+    : Astro.props.alternates;
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  headline: `${title}`,
-  image: `${socialImageURL}`,
-  datePublished: `${pubDatetime?.toISOString()}`,
-  ...(modDatetime && { dateModified: modDatetime.toISOString() }),
-  author: [
-    {
-      "@type": "Person",
-      name: `${author}`,
-      ...(profile && { url: profile }),
-    },
-  ],
+// Sans image fournie : aperçu du site généré (/og.jpg), aux dimensions connues
+const ogImage = pageOgImage ?? (SITE.ogImage ? `/${SITE.ogImage}` : "/og.jpg");
+const ogImageSize =
+  Astro.props.ogImageSize ??
+  (pageOgImage || SITE.ogImage ? undefined : GENERATED_OG_SIZE);
+
+const socialImageURL = new URL(ogImage, Astro.url);
+const ogLocale = lang === "en" ? "en_US" : "fr_FR";
+
+const person = {
+  "@type": "Person",
+  name: SITE.name,
+  ...(profile && { url: profile }),
 };
+
+const structuredData = pubDatetime
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: `${title}`,
+      image: `${socialImageURL}`,
+      datePublished: pubDatetime.toISOString(),
+      ...(modDatetime && { dateModified: modDatetime.toISOString() }),
+      inLanguage: lang,
+      author: [{ ...person, name: `${author}` }],
+    }
+  : {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE.title,
+      url: SITE.website,
+      description,
+      inLanguage: lang,
+      author: person,
+    };
 ---
 
 <!doctype html>
-<html
-  dir={SITE.dir}
-  lang=`${SITE.lang ?? "en"}`
-  class={`${scrollSmooth && "scroll-smooth"}`}
->
+<html dir={SITE.dir} lang={lang} class:list={{ "scroll-smooth": scrollSmooth }}>
   <head>
     <meta charset="UTF-8" />
+    <!-- Couleurs du thème choisi par PUBLIC_THEME (src/utils/theme.ts) -->
+    <Fragment
+      set:html={`<style data-theme-palette="${THEME_NAME}">${themeCss}</style>`}
+    />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href={`/favicon.ico?v=${iconVersion}`} sizes="32x32" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href={`/favicon.svg?v=${iconVersion}`}
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="apple-touch-icon"
+      href={`/apple-touch-icon.png?v=${iconVersion}`}
+    />
     <link rel="canonical" href={canonicalURL} />
+    {
+      alternates &&
+        Object.entries(alternates).map(([code, path]) => (
+          <link
+            rel="alternate"
+            hreflang={code}
+            href={new URL(path, Astro.site ?? Astro.url)}
+          />
+        ))
+    }
+    {
+      alternates?.fr && (
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={new URL(alternates.fr, Astro.site ?? Astro.url)}
+        />
+      )
+    }
     <meta name="generator" content={Astro.generator} />
 
     <!-- General Meta Tags -->
@@ -69,11 +169,24 @@ const structuredData = {
     <meta name="author" content={author} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph (WhatsApp, LinkedIn, Facebook…) -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={socialImageURL} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    {
+      ogImageSize && (
+        <>
+          <meta property="og:image:type" content="image/jpeg" />
+          <meta property="og:image:width" content={`${ogImageSize.width}`} />
+          <meta property="og:image:height" content={`${ogImageSize.height}`} />
+        </>
+      )
+    }
 
     <!-- Article Published/Modified time -->
     {
@@ -93,12 +206,13 @@ const structuredData = {
       )
     }
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={socialImageURL} />
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageURL} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <!-- Google JSON-LD Structured data -->
     <script
@@ -149,12 +263,3 @@ const structuredData = {
     <slot />
   </body>
 </html>
-
-<style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>

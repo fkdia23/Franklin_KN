@@ -171,6 +171,3 @@ Gradio · Docker
   données.
 - **Industrialisation** : Python, TypeScript/Next.js, FastAPI, Docker,
   PostgreSQL, Neo4j et monitoring des coûts, logs et performances.
-
-> Curieux, pédagogue et autonome : ces projets sont nés de besoins concrets,
-> documentés et conçus pour être repris en équipe.

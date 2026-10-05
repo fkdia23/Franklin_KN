@@ -3,6 +3,7 @@ import IconMail from "@/assets/icons/IconMail.svg";
 import IconGitHub from "@/assets/icons/IconGitHub.svg";
 import IconBrandX from "@/assets/icons/IconBrandX.svg";
 import IconLinkedin from "@/assets/icons/IconLinkedin.svg";
+import IconHuggingFace from "@/assets/icons/IconHuggingFace.svg";
 import IconWhatsapp from "@/assets/icons/IconWhatsapp.svg";
 import IconFacebook from "@/assets/icons/IconFacebook.svg";
 import IconTelegram from "@/assets/icons/IconTelegram.svg";
@@ -20,25 +21,26 @@ export const SOCIALS: Social[] = [
   {
     name: "GitHub",
     href: "https://github.com/fkdia23",
-    linkTitle: `${SITE.title} on GitHub`,
+    linkTitle: `${SITE.title} sur GitHub`,
     icon: IconGitHub,
   },
-  // {
-  //   name: "X",
-  //   href: "https://x.com/username",
-  //   linkTitle: `${SITE.title} on X`,
-  //   icon: IconBrandX,
-  // },
   {
     name: "LinkedIn",
     href: "https://www.linkedin.com/in/franklin-kana-nguedia",
-    linkTitle: `${SITE.title} on LinkedIn`,
+    linkTitle: `${SITE.title} sur LinkedIn`,
     icon: IconLinkedin,
   },
   {
-    name: "Mail",
+    name: "Hugging Face",
+    href: "https://huggingface.co/fknguedia",
+    linkTitle: `${SITE.title} sur Hugging Face`,
+    icon: IconHuggingFace,
+  },
+  // Kaggle : ajouter ici le lien du profil (icône à créer dans src/assets/icons).
+  {
+    name: "Email",
     href: "mailto:fknguedia@gmail.com",
-    linkTitle: `Send an email to ${SITE.title}`,
+    linkTitle: `Écrire à ${SITE.title}`,
     icon: IconMail,
   },
 ] as const;
@@ -47,7 +49,7 @@ export const SHARE_LINKS_PROJET: Social[] = [
   {
     name: "GitHub",
     href: "https://github.com/fkdia23",
-    linkTitle: `${SITE.title} on GitHub`,
+    linkTitle: `${SITE.title} sur GitHub`,
     icon: IconGitHub,
   },
 ] as const;

@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time";
 import { remarkAlerts } from "./src/plugins/remark-alerts";
+import { remarkKnowledgeFiles } from "./src/plugins/remark-knowledge-files";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -16,11 +17,20 @@ import react from "@astrojs/react";
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
-  integrations: [sitemap({
-    filter: page => SITE.showArchives || !page.endsWith("/archives"),
-  }), react()],
+  redirects: {
+    // L'onglet Certifications a rejoint la page À propos
+    "/certifications": "/about/#certifications",
+  },
+  integrations: [
+    sitemap({
+      filter: page => SITE.showArchives || !page.endsWith("/archives"),
+      // Pages françaises à la racine, anglaises sous /en/ (balises hreflang)
+      i18n: { defaultLocale: "fr", locales: { fr: "fr-FR", en: "en-US" } },
+    }),
+    react(),
+  ],
   markdown: {
-    remarkPlugins: [remarkReadingTime, remarkAlerts],
+    remarkPlugins: [remarkReadingTime, remarkAlerts, remarkKnowledgeFiles],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "night-owl" },
@@ -50,6 +60,14 @@ export default defineConfig({
   },
   env: {
     schema: {
+      // Thème de couleurs : "ambre" (charbon + ambre) ou "classique" (blanc + bleu nuit).
+      // À définir dans .env (local) ou dans le workflow de déploiement — voir src/utils/theme.ts.
+      PUBLIC_THEME: envField.enum({
+        context: "client",
+        access: "public",
+        values: ["ambre", "classique"],
+        default: "ambre",
+      }),
       PUBLIC_GOOGLE_SITE_VERIFICATION: envField.string({
         access: "public",
         context: "client",

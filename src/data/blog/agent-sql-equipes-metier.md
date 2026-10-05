@@ -12,6 +12,8 @@ tags:
   - FastAPI
   - Data
 github: https://github.com/fkdia23/text-to-sql-to-text
+cover: ../../assets/images/covers/text-to-sql.png
+coverAlt: "Interface Gradio : question en langage naturel, requête SQL générée et résultats"
 description: >
   Un assistant SQL en langage naturel permettant à des non-techniciens
   d'interroger des bases PostgreSQL sans assistance technique, avec une

@@ -10,6 +10,58 @@ Ce guide de branding sert de référence pour ton portfolio et tous tes futurs p
 - Rôle principal : **Data Engineer & AI Engineer**
 - Valeur clé : transformer des données complexes en solutions métier robustes et industrialisables.
 
+## Identité visuelle (en place sur le site)
+
+Les valeurs ci-dessous font foi : ce sont celles du site et des aperçus de liens.
+
+### Nom
+
+- **Franklin KN** partout : header, onglet du navigateur, pied de page, aperçus de liens, badge. Il s'écrit en deux couleurs, comme « Sebastian Raschka » : « Franklin » dans la couleur du texte, « KN » en couleur d'accent.
+- Le nom complet (Franklin KANA NGUEDIA) n'apparaît que dans les descriptions : méta-description, bio de la page À propos, textes alternatifs des images.
+
+### Thèmes de couleurs
+
+Deux thèmes, choisis par la variable d'environnement `PUBLIC_THEME` (source unique des couleurs : `src/utils/theme.ts`) :
+
+- **`ambre`** (par défaut) : charbon + ambre.
+- **`classique`** : blanc + bleu nuit.
+
+Où la définir :
+
+- en local, dans `.env` (modèle : `.env.example`), puis relancer `npm run dev` ;
+- en production, dans GitHub : Settings > Secrets and variables > Actions > Variables > `PUBLIC_THEME`, puis relancer le déploiement. Sans variable, le site est en `ambre`.
+
+| Rôle | Ambre clair | Ambre sombre | Classique clair | Classique sombre |
+| --- | --- | --- | --- | --- |
+| Fond | `#faf9f6` | `#18181b` | `#ffffff` | `#0f1216` |
+| Texte | `#1c1b19` | `#e8e6e1` | `#1f2328` | `#e6e8eb` |
+| Texte secondaire | `#6b6a63` | `#a1a09a` | `#5b6470` | `#9aa3ae` |
+| Accent (liens) | `#8a5e12` | `#d4a843` | `#1a5fb4` | `#6ea8fe` |
+| Surface | `#efece4` | `#27272a` | `#f5f6f8` | `#171b21` |
+| Bordures | `#e3e0d7` | `#3a3a40` | `#e2e5e9` | `#2a3038` |
+| Icône (fond) | `#8a5e12` | `#d4a843` | `#1b365d` | `#1b365d` |
+
+### Logo et icône
+
+- **Logo** : le nom « Franklin KN » en Inter Regular, « KN » en couleur d'accent, avec en option « DATA & AI ENGINEER » dessous (Inter Medium, espacé). Pas de symbole : le header n'affiche que le nom.
+- **Icône** (onglet du navigateur, écran d'accueil iOS, avatars) : le mot « Franklin » en Inter ExtraBold dans un carré aux coins arrondis, aux couleurs du thème. À 16 px, le mot n'est pas lisible ; il l'est à partir de 32 px (écrans haute résolution).
+- Fichiers dans `public/brand/<thème>/`, aussi en ligne sur `https://fkdia23.github.io/brand/<thème>/<fichier>` :
+
+| Fichier | Usage |
+| --- | --- |
+| `franklin-kn-icon.svg`, `-512.png`, `-1024.png` | Avatar (GitHub, LinkedIn, Hugging Face), icône, sur fond clair |
+| `franklin-kn-icon-dark-bg.svg`, `-dark-bg-512.png` | Icône sur fond sombre |
+| `franklin-kn-logo.svg`, `.png` | CV, slides, documents sur fond clair |
+| `franklin-kn-logo-dark-bg.svg`, `.png` | Fonds sombres |
+| `../franklin-kn-logo-black.svg`, `../franklin-kn-logo-white.svg` | Monochrome : impression, filigrane |
+
+Règles d'usage : garder autour du logo une marge d'au moins la hauteur du « K » ; ne pas le déformer, le recolorer hors des couleurs ci-dessus ni changer sa police.
+
+### Typographie
+
+- **Inter** (400 à 800), auto-hébergée dans `public/fonts/` : textes du site, nom, icône (vectorisée), aperçus de liens, badge.
+- Code : police monospace du système.
+
 ## Ton & message
 
 - Professionnel, direct et orienté valeur métier.

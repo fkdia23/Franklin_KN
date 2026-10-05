@@ -1,0 +1,15 @@
+---
+import { getCollection } from "astro:content";
+import PostDetails from "@/layouts/PostDetails.astro";
+import { postPagePaths } from "@/utils/postRoutes";
+
+/** Posts écrits en anglais (voir src/utils/translations.ts). */
+export async function getStaticPaths() {
+  return postPagePaths("en");
+}
+
+const { post } = Astro.props;
+const posts = await getCollection("blog");
+---
+
+<PostDetails {post} {posts} />

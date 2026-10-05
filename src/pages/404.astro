@@ -2,29 +2,36 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
-import LinkButton from "@/components/LinkButton.astro";
 import { SITE } from "@/config";
+
+// Une seule page 404 pour tout le site (GitHub Pages) : bilingue.
 ---
 
-<Layout title={`404 Not Found | ${SITE.title}`}>
-  <Header />
+<Layout title={`404 | ${SITE.title}`} alternates={null}>
+  <Header alternate="/en/" />
 
   <main
     id="main-content"
-    class="mx-auto flex max-w-app flex-1 items-center justify-center"
+    class="mx-auto flex max-w-app flex-1 items-center justify-center px-4"
   >
-    <div class="mb-14 flex flex-col items-center justify-center">
-      <h1 class="text-9xl font-bold text-accent">404</h1>
-      <span aria-hidden="true">¯\_(ツ)_/¯</span>
-      <p class="mt-4 text-2xl sm:text-3xl">Page Not Found</p>
-      <LinkButton
-        href="/"
-        class="my-6 text-lg underline decoration-dashed underline-offset-8"
-      >
-        Go back home
-      </LinkButton>
+    <div class="mb-14 flex flex-col items-center justify-center text-center">
+      <h1 class="text-7xl font-bold tracking-tight text-muted-foreground">
+        404
+      </h1>
+      <p class="mt-4 text-2xl font-semibold sm:text-3xl">Page introuvable</p>
+      <p class="mt-2 text-muted-foreground">
+        Cette page n'existe pas ou a été déplacée.
+      </p>
+      <p class="mt-6 text-xl font-semibold" lang="en">Page not found</p>
+      <p class="mt-1 text-muted-foreground" lang="en">
+        This page does not exist or has been moved.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a href="/" class="btn btn-secondary">Retour à l'accueil</a>
+        <a href="/en/" class="btn btn-secondary" lang="en">Back to home</a>
+      </div>
     </div>
   </main>
 
-  <!-- <Footer /> -->
+  <Footer />
 </Layout>

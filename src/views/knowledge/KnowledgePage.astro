@@ -1,0 +1,437 @@
+---
+import { render } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import KnowledgeLayout from "@/layouts/KnowledgeLayout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import CourseCard from "@/components/knowledge/CourseCard.astro";
+import EntryList from "@/components/knowledge/EntryList.astro";
+import ProgressBars from "@/components/knowledge/ProgressBars.astro";
+import StatusBadge from "@/components/knowledge/StatusBadge.astro";
+import {
+  formatDate,
+  sectionsFor,
+  hubUrl,
+  trackUrl,
+  type KnowledgeRoute,
+} from "@/utils/knowledge";
+import { KNOWLEDGE } from "@/knowledge.config";
+import { SITE } from "@/config";
+import { getLangFromUrl, stripLang, useTranslations } from "@/i18n/utils";
+
+/**
+ * Route générique de tout ce qui se trouve sous /knowledge/<track>/ :
+ *   courses/                       liste des cours
+ *   courses/<cours>/               un cours et ses modules
+ *   courses/<cours>/<module>/      la note d'un module
+ *   <section>/                     notes, experiments, projects, papers, references, journal
+ *   <section>/<entrée>/            une entrée
+ * Seuls les contenus publiés sont générés (voir src/utils/knowledge.ts).
+ */
+
+const { route } = Astro.props as { route: KnowledgeRoute };
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const SECTIONS = sectionsFor(lang);
+const { track } = route.data;
+const base = trackUrl(track, lang);
+
+const crumbs = [
+  { label: KNOWLEDGE.title, href: hubUrl(lang) },
+  { label: track.title, href: base },
+];
+
+// Contenu Markdown de la page (cours, module ou entrée)
+const doc =
+  route.kind === "course"
+    ? route.course.entry
+    : route.kind === "module"
+      ? route.module.entry
+      : route.kind === "entry"
+        ? route.item.entry
+        : undefined;
+const rendered = doc ? await render(doc) : undefined;
+const Content = rendered?.Content;
+const headings = rendered?.headings ?? [];
+
+const metaRow =
+  "mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground";
+const linkButton = "btn btn-secondary py-1";
+
+/* ===== Données propres à chaque type de page ===== */
+
+// Module : voisins dans le cours
+const moduleNav = (() => {
+  if (route.kind !== "module") return {};
+  const list = route.course.modules;
+  const i = list.findIndex(m => m.slug === route.module.slug);
+  const label = (m: (typeof list)[number]) =>
+    m.number ? `${m.number} · ${m.title}` : m.title;
+  return {
+    prev:
+      i > 0
+        ? {
+            title: label(list[i - 1]),
+            url: list[i - 1].url,
+            label: t("k.prevModule"),
+          }
+        : undefined,
+    next:
+      i >= 0 && i < list.length - 1
+        ? {
+            title: label(list[i + 1]),
+            url: list[i + 1].url,
+            label: t("k.nextModule"),
+          }
+        : undefined,
+  };
+})();
+
+// Entrée : voisins dans sa section (journal : plus récent / plus ancien)
+const entryNav = (() => {
+  if (route.kind !== "entry") return {};
+  const list = route.data.sections[route.item.section].filter(item => item.url);
+  const i = list.findIndex(item => item.slug === route.item.slug);
+  const journal = route.item.section === "journal";
+  return {
+    prev:
+      i > 0
+        ? {
+            title: list[i - 1].title,
+            url: list[i - 1].url!,
+            label: journal ? t("k.newer") : t("k.prev"),
+          }
+        : undefined,
+    next:
+      i >= 0 && i < list.length - 1
+        ? {
+            title: list[i + 1].title,
+            url: list[i + 1].url!,
+            label: journal ? t("k.older") : t("k.next"),
+          }
+        : undefined,
+  };
+})();
+
+// Aperçu de lien généré par src/pages/knowledge/[...page]/og.jpg.ts
+// (une seule image par page, partagée par le français et l'anglais)
+const ogImage = `${stripLang(Astro.url.pathname).replace(/\/?$/, "/")}og.jpg`;
+const ogImageSize = { width: 1200, height: 630 };
+
+const sectionTitle =
+  route.kind === "section"
+    ? SECTIONS[route.section].label
+    : route.kind === "courses"
+      ? t("k.courses")
+      : "";
+---
+
+{
+  route.kind === "course" && (
+    <KnowledgeLayout
+      title={route.course.title}
+      description={route.course.entry.data.description}
+      breadcrumb={[
+        ...crumbs,
+        { label: t("k.courses"), href: `${base}courses/` },
+        { label: route.course.title },
+      ]}
+      eyebrow={{ label: `${t("k.course")} · ${track.title}`, href: base }}
+      published={route.course.published && track.enabled}
+      headings={headings}
+      {ogImage}
+    >
+      <Fragment slot="meta">
+        <div class={metaRow}>
+          <StatusBadge
+            status={route.course.status}
+            published={route.course.published}
+          />
+          {route.course.entry.data.provider && (
+            <span>{route.course.entry.data.provider}</span>
+          )}
+          {route.course.entry.data.started && (
+            <span>
+              {t("k.started")}{" "}
+              {formatDate(route.course.entry.data.started, lang)}
+            </span>
+          )}
+          {route.course.entry.data.completed && (
+            <span>
+              {t("k.completed")}{" "}
+              {formatDate(route.course.entry.data.completed, lang)}
+            </span>
+          )}
+          {route.course.entry.data.url && (
+            <a
+              href={route.course.entry.data.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={linkButton}
+            >
+              {t("k.courseSource")} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+        {route.course.progress.total > 0 && (
+          <ProgressBars
+            class="mt-6"
+            rows={[{ ...route.course.progress, label: t("k.progress") }]}
+            color={track.color}
+            counts
+          />
+        )}
+      </Fragment>
+
+      {Content && <Content />}
+
+      <Fragment slot="after">
+        <h2 class="mt-12 mb-4 text-xl font-semibold tracking-tight">
+          {t("k.modules")}
+        </h2>
+        {route.course.modules.length ? (
+          <ol class="divide-y divide-border border-y border-border">
+            {route.course.modules.map(module => (
+              <li class="flex items-baseline gap-4 py-3">
+                <span class="w-7 shrink-0 text-sm text-muted-foreground tabular-nums">
+                  {module.number}
+                </span>
+                <span class="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                  <a
+                    href={module.url}
+                    class="font-medium transition-colors hover:text-accent"
+                  >
+                    {module.title}
+                  </a>
+                  <StatusBadge
+                    status={module.status}
+                    published={route.course.published && module.published}
+                  />
+                </span>
+                {module.entry.data.area && (
+                  <span class="hidden text-xs text-muted-foreground sm:inline">
+                    {module.entry.data.area}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p class="text-muted-foreground">{t("k.modulesLater")}</p>
+        )}
+      </Fragment>
+    </KnowledgeLayout>
+  )
+}
+
+{
+  route.kind === "module" && (
+    <KnowledgeLayout
+      title={route.module.title}
+      description={route.module.entry.data.description}
+      breadcrumb={[
+        ...crumbs,
+        { label: route.course.title, href: route.course.url },
+        { label: route.module.title },
+      ]}
+      eyebrow={{
+        label: `${route.module.number ? `${t("k.module")} ${route.module.number} · ` : ""}${route.course.title}`,
+        href: route.course.url,
+      }}
+      published={
+        track.enabled && route.course.published && route.module.published
+      }
+      headings={headings}
+      {ogImage}
+      prev={moduleNav.prev}
+      next={moduleNav.next}
+    >
+      <Fragment slot="meta">
+        <div class={metaRow}>
+          <StatusBadge
+            status={route.module.status}
+            published={route.course.published && route.module.published}
+          />
+          {route.module.entry.data.area && (
+            <span>{route.module.entry.data.area}</span>
+          )}
+          {route.module.entry.data.started && (
+            <span>
+              {t("k.started")}{" "}
+              {formatDate(route.module.entry.data.started, lang)}
+            </span>
+          )}
+          {route.module.entry.data.completed && (
+            <span>
+              {t("k.completed")}{" "}
+              {formatDate(route.module.entry.data.completed, lang)}
+            </span>
+          )}
+          {route.module.entry.data.github && (
+            <a
+              href={route.module.entry.data.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={linkButton}
+            >
+              {t("k.github")} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+      </Fragment>
+      {Content && <Content />}
+    </KnowledgeLayout>
+  )
+}
+
+{
+  route.kind === "entry" && (
+    <KnowledgeLayout
+      title={route.item.title}
+      description={route.item.entry.data.description}
+      breadcrumb={[
+        ...crumbs,
+        {
+          label: SECTIONS[route.item.section].label,
+          href: `${base}${route.item.section}/`,
+        },
+        { label: route.item.title },
+      ]}
+      eyebrow={{
+        label: `${SECTIONS[route.item.section].label} · ${track.title}`,
+        href: `${base}${route.item.section}/`,
+      }}
+      published={track.enabled && route.item.published}
+      headings={headings}
+      {ogImage}
+      prev={entryNav.prev}
+      next={entryNav.next}
+    >
+      <Fragment slot="meta">
+        <div class={metaRow}>
+          <StatusBadge
+            status={route.item.status}
+            published={route.item.published}
+          />
+          {route.item.date && (
+            <time datetime={route.item.date.toISOString()}>
+              {formatDate(route.item.date, lang)}
+            </time>
+          )}
+          {route.item.entry.data.authors && (
+            <span>
+              {route.item.entry.data.authors}
+              {route.item.entry.data.year && ` (${route.item.entry.data.year})`}
+            </span>
+          )}
+          {route.item.entry.data.url && (
+            <a
+              href={route.item.entry.data.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={linkButton}
+            >
+              {route.item.section === "papers" ? t("k.readPaper") : t("k.link")}{" "}
+              <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {route.item.entry.data.github && (
+            <a
+              href={route.item.entry.data.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={linkButton}
+            >
+              {t("k.github")} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {route.item.entry.data.demo && (
+            <a
+              href={route.item.entry.data.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={linkButton}
+            >
+              {t("k.demo")} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+        {(route.item.entry.data.objective ||
+          route.item.entry.data.hypothesis ||
+          route.item.entry.data.dataset) && (
+          <dl class="mt-6 grid gap-x-6 gap-y-2 rounded-lg border border-border p-4 text-sm sm:grid-cols-[auto_1fr]">
+            {route.item.entry.data.objective && (
+              <>
+                <dt class="font-semibold">{t("k.objective")}</dt>
+                <dd class="text-muted-foreground">
+                  {route.item.entry.data.objective}
+                </dd>
+              </>
+            )}
+            {route.item.entry.data.hypothesis && (
+              <>
+                <dt class="font-semibold">{t("k.hypothesis")}</dt>
+                <dd class="text-muted-foreground">
+                  {route.item.entry.data.hypothesis}
+                </dd>
+              </>
+            )}
+            {route.item.entry.data.dataset && (
+              <>
+                <dt class="font-semibold">{t("k.dataset")}</dt>
+                <dd class="text-muted-foreground">
+                  {route.item.entry.data.dataset}
+                </dd>
+              </>
+            )}
+          </dl>
+        )}
+      </Fragment>
+      {Content && <Content />}
+    </KnowledgeLayout>
+  )
+}
+
+{
+  (route.kind === "section" || route.kind === "courses") && (
+    <Layout
+      title={`${sectionTitle} · ${track.title} | ${SITE.title}`}
+      description={
+        route.kind === "section"
+          ? `${SECTIONS[route.section].intro} — ${track.title}.`
+          : `${t("k.coursesIntro")} ${track.title}.`
+      }
+      {ogImage}
+      {ogImageSize}
+    >
+      <Header />
+      <Breadcrumb items={[...crumbs, { label: sectionTitle }]} />
+      <main id="main-content" class="mx-auto w-full max-w-app px-4 pt-4 pb-16">
+        <p class="text-xs font-semibold tracking-wide text-accent uppercase">
+          <a href={base} class="hover:underline">
+            {track.title}
+          </a>
+        </p>
+        <h1 class="mt-2 text-[1.9rem] leading-tight font-bold tracking-tight sm:text-[2.4rem]">
+          {sectionTitle}
+        </h1>
+        <p class="mt-3 mb-8 text-lg text-muted-foreground">
+          {route.kind === "section"
+            ? SECTIONS[route.section].intro
+            : `${t("k.coursesIntro")} ${track.title}.`}
+        </p>
+        {route.kind === "section" ? (
+          <EntryList items={route.data.sections[route.section]} />
+        ) : (
+          <ul class="grid gap-4 sm:grid-cols-2">
+            {route.data.courses.map(course => (
+              <CourseCard {course} />
+            ))}
+          </ul>
+        )}
+      </main>
+      <Footer />
+    </Layout>
+  )
+}
