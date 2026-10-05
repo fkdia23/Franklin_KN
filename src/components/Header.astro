@@ -1,14 +1,37 @@
 ---
-import Hr from "./Hr.astro";
-import Logo from "./Logo.astro";
-import IconX from "@/assets/icons/IconX.svg";
+import Wordmark from "./Wordmark.astro";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
-import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
-import LinkButton from "./LinkButton.astro";
+import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
+import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import { SITE } from "@/config";
+import { SOCIALS } from "@/constants";
+import { KNOWLEDGE } from "@/knowledge.config";
+import { getTracks, hubUrl, trackUrl } from "@/utils/knowledge";
+import { LANG_NAMES } from "@/i18n/ui";
+import {
+  LANGS,
+  getLangFromUrl,
+  localizePath,
+  otherLang,
+  useTranslations,
+} from "@/i18n/utils";
+
+export interface Props {
+  /**
+   * Page équivalente dans l'autre langue. Par défaut : le même chemin avec
+   * l'autre préfixe (/about/ ↔ /en/about/). Un post sans traduction passe
+   * ici la liste des posts de l'autre langue.
+   */
+  alternate?: string;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const switchHref =
+  Astro.props.alternate ?? localizePath(Astro.url.pathname, otherLang(lang));
 
 const { pathname } = Astro.url;
 
@@ -16,164 +39,289 @@ const { pathname } = Astro.url;
 const currentPath =
   pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
 
+// Actif sur la page elle-même et ses sous-pages (/posts/…, /knowledge/<track>/…)
 const isActive = (path: string) => {
-  const currentPathArray = currentPath.split("/").filter(p => p.trim());
-  const pathArray = path.split("/").filter(p => p.trim());
-
-  return currentPath === path || currentPathArray[0] === pathArray[0];
+  const target = path.replace(/\/+$/, "");
+  return currentPath === target || currentPath.startsWith(`${target}/`);
 };
+
+// Onglets des tracks du Knowledge Hub, générés depuis src/knowledge.config.ts.
+// Au-delà de KNOWLEDGE.headerLimit, « Plus » mène au hub qui les liste tous.
+const tracks = getTracks();
+const shownTracks = tracks.slice(0, KNOWLEDGE.headerLimit);
+const hiddenTracks = tracks.slice(KNOWLEDGE.headerLimit);
+
+const links = [
+  { href: localizePath("/posts/", lang), label: t("nav.posts") },
+  ...shownTracks.map(track => ({
+    href: trackUrl(track, lang),
+    label: track.title,
+    // Dev uniquement : track désactivé, absent en production
+    offline: !track.enabled,
+  })),
+  ...(hiddenTracks.length
+    ? [
+        {
+          href: hubUrl(lang),
+          label: t("nav.more"),
+          title: hiddenTracks.map(track => track.title).join(", "),
+          active: hiddenTracks.some(track => isActive(trackUrl(track, lang))),
+        },
+      ]
+    : []),
+  { href: localizePath("/tags/", lang), label: t("nav.tags") },
+  { href: localizePath("/about/", lang), label: t("nav.about") },
+] as {
+  href: string;
+  label: string;
+  offline?: boolean;
+  title?: string;
+  active?: boolean;
+}[];
+
+const searchHref = localizePath("/search/", lang);
+const archivesHref = localizePath("/archives/", lang);
+
+const iconButton =
+  "flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&>svg]:size-[1.15rem] [&>svg]:stroke-[1.75]";
+const scrollButton =
+  "absolute top-1 z-10 flex size-7 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-colors hover:text-foreground [&>svg]:size-4";
 ---
 
-<header>
+<!--
+  Header centré sur la colonne du contenu (comme sebastianraschka.com) :
+  1. [Franklin KN]  [réseaux]  |  [thème recherche archives]  [FR | EN]
+  2. [Posts  <tracks…>  Tags  À propos]
+  Quand les onglets dépassent, ils défilent : un fondu et une flèche signalent
+  ceux qui sont cachés (clic = défilement). Sur mobile, les réseaux passent
+  dans le pied de page. Le bouton de thème reste unique : toggle-theme.js
+  cible #theme-btn.
+-->
+<header class="border-b border-border">
   <a
     id="skip-to-content"
     href="#main-content"
-    class="absolute start-16 -top-full z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4"
+    class="absolute start-16 -top-full z-50 rounded-md bg-background px-3 py-2 text-accent shadow transition-all focus:top-4"
   >
-    Skip to content
+    {t("nav.skip")}
   </a>
-  <div
-    id="nav-container"
-    class="mx-auto flex max-w-app flex-col items-center justify-between sm:flex-row"
-  >
-    <div
-      id="top-nav-wrap"
-      class="relative flex w-full items-baseline justify-between bg-background p-4 sm:items-center sm:py-6"
-    >
+
+  <div class="mx-auto max-w-app px-4 pt-4">
+    <div class="flex items-center gap-x-2">
       <a
-        href="/"
-        class="absolute py-1 transition-opacity hover:opacity-80 sm:static sm:my-auto"
-        aria-label="Franklin KANA NGUEDIA — accueil"
+        href={localizePath("/", lang)}
+        class="py-1 text-[1.45rem] leading-none font-normal tracking-[-0.03em] whitespace-nowrap sm:text-[1.625rem]"
+        aria-label={`${SITE.title}, ${t("site.home")}`}
       >
-        <Logo size={38} />
+        <Wordmark />
       </a>
 
+      <ul
+        class="ms-2 hidden items-center gap-0.5 sm:flex"
+        aria-label={t("nav.socials")}
+      >
+        {
+          SOCIALS.map(social => (
+            <li>
+              <a
+                href={social.href}
+                class={iconButton}
+                title={social.linkTitle}
+                aria-label={social.linkTitle}
+                {...(social.href.startsWith("http") && {
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                })}
+              >
+                <social.icon />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <span class="mx-1 hidden h-5 w-px bg-border sm:block" aria-hidden="true"
+      ></span>
+
+      <div class="ms-auto flex items-center gap-0.5 sm:ms-0">
+        {
+          SITE.lightAndDarkMode && (
+            <button
+              id="theme-btn"
+              class:list={[iconButton, "relative"]}
+              title={t("nav.theme")}
+              aria-label="auto"
+              aria-live="polite"
+            >
+              <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+              <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+            </button>
+          )
+        }
+        <a
+          href={searchHref}
+          class:list={[iconButton, { "text-foreground": isActive(searchHref) }]}
+          aria-label={t("nav.search")}
+          title={t("nav.search")}
+        >
+          <IconSearch />
+        </a>
+        {
+          SITE.showArchives && (
+            <a
+              href={archivesHref}
+              class:list={[
+                iconButton,
+                { "text-foreground": isActive(archivesHref) },
+              ]}
+              aria-label={t("nav.archives")}
+              title={t("nav.archives")}
+            >
+              <IconArchive />
+            </a>
+          )
+        }
+
+        <!-- Langue : la page équivalente dans l'autre langue -->
+        <ul
+          class="ms-1.5 flex items-center rounded-md border border-border p-0.5 text-xs font-semibold"
+          aria-label={t("nav.language")}
+        >
+          {
+            LANGS.map(code => (
+              <li>
+                {code === lang ? (
+                  <span
+                    class="block rounded bg-muted px-1.5 py-0.5 text-foreground uppercase"
+                    aria-current="true"
+                    title={LANG_NAMES[code]}
+                  >
+                    {code}
+                  </span>
+                ) : (
+                  <a
+                    href={switchHref}
+                    hreflang={code}
+                    lang={code}
+                    title={LANG_NAMES[code]}
+                    class="block rounded px-1.5 py-0.5 text-muted-foreground uppercase transition-colors hover:text-foreground"
+                  >
+                    {code}
+                  </a>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="relative">
+      <button
+        type="button"
+        data-nav-prev
+        hidden
+        class:list={[scrollButton, "start-0"]}
+        aria-label={t("nav.prevTabs")}
+        title={t("nav.prevTabs")}
+      >
+        <IconChevronLeft />
+      </button>
       <nav
         id="nav-menu"
-        class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"
+        aria-label={t("nav.main")}
+        class="nav-scroll -mx-1 mt-1 overflow-x-auto"
+        data-nav-scroll
       >
-        <!-- <button
-          id="menu-btn"
-          class="focus-outline self-end p-2 sm:hidden"
-          aria-label="Open Menu"
-          aria-expanded="false"
-          aria-controls="menu-items"
-        >
-          <IconX id="close-icon" class="hidden" />
-          <IconMenuDeep id="menu-icon" />
-        </button> -->
         <ul
-          id="menu-items"
-          class:list={[
-            "mt-4 grid w-44 grid-cols-2 place-content-center gap-2",
-            "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
-            "hidden",
-            "sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
-          ]}
+          class="flex w-max items-center gap-x-5 px-1 pt-1.5 pb-3 text-[0.95rem]"
         >
-          <li class="col-span-2">
-            <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
-              Projets
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}>
-              Tags
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a
-              href="/certifications"
-              class:list={{ "active-nav": isActive("/certifications") }}
-            >
-              Certifications
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
-              À propos
-            </a>
-          </li>
           {
-            SITE.showArchives && (
-              <li class="col-span-2">
-                <LinkButton
-                  href="/archives"
-                  class:list={[
-                    "focus-outline flex justify-center p-3 sm:p-1",
-                    {
-                      "active-nav [&>svg]:stroke-accent": isActive("/archives"),
-                    },
-                  ]}
-                  ariaLabel="archives"
-                  title="Archives"
-                >
-                  <IconArchive class="hidden sm:inline-block" />
-                  <span class="sm:sr-only">Archives</span>
-                </LinkButton>
-              </li>
-            )
-          }
-          <li class="col-span-1 flex items-center justify-center">
-            <LinkButton
-              href="/search"
-              class:list={[
-                "focus-outline flex p-3 sm:p-1",
-                { "[&>svg]:stroke-accent": isActive("/search") },
-              ]}
-              ariaLabel="search"
-              title="Search"
-            >
-              <IconSearch />
-              <span class="sr-only">Search</span>
-            </LinkButton>
-          </li>
-          {
-            SITE.lightAndDarkMode && (
-              <li class="col-span-1 flex items-center justify-center">
-                <button
-                  id="theme-btn"
-                  class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
-                  title="Toggles light & dark"
-                  aria-label="auto"
-                  aria-live="polite"
-                >
-                  <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                  <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                </button>
-              </li>
-            )
+            links.map(link => {
+              const active = link.active ?? isActive(link.href);
+              return (
+                <li>
+                  <a
+                    href={link.href}
+                    title={link.offline ? t("nav.offline") : link.title}
+                    class:list={[
+                      "font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground",
+                      { "active-nav": active, "opacity-50": link.offline },
+                    ]}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              );
+            })
           }
         </ul>
       </nav>
+      <button
+        type="button"
+        data-nav-next
+        hidden
+        class:list={[scrollButton, "end-0"]}
+        aria-label={t("nav.nextTabs")}
+        title={t("nav.nextTabs")}
+      >
+        <IconChevronRight />
+      </button>
     </div>
   </div>
-  <Hr />
 </header>
 
 <script>
-  function toggleNav() {
-    const menuBtn = document.querySelector("#menu-btn");
-    const menuItems = document.querySelector("#menu-items");
-    const menuIcon = document.querySelector("#menu-icon");
-    const closeIcon = document.querySelector("#close-icon");
+  /**
+   * Onglets défilants : quand des onglets sont cachés, un fondu et une flèche
+   * les signalent de ce côté ; la flèche fait défiler. L'onglet actif est
+   * ramené au centre au chargement.
+   */
+  function setupNavScroll() {
+    const nav = document.querySelector<HTMLElement>("[data-nav-scroll]");
+    if (!nav) return;
+    const prev = document.querySelector<HTMLButtonElement>("[data-nav-prev]");
+    const next = document.querySelector<HTMLButtonElement>("[data-nav-next]");
 
-    if (!menuBtn || !menuItems || !menuIcon || !closeIcon) return;
+    const update = () => {
+      const max = nav.scrollWidth - nav.clientWidth;
+      const hasLeft = nav.scrollLeft > 2;
+      const hasRight = nav.scrollLeft < max - 2;
+      nav.dataset.fade = [hasLeft && "left", hasRight && "right"]
+        .filter(Boolean)
+        .join(" ");
+      if (prev) prev.hidden = !hasLeft;
+      if (next) next.hidden = !hasRight;
+    };
 
-    menuBtn.addEventListener("click", () => {
-      const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
+    const active = nav.querySelector<HTMLElement>('[aria-current="page"]');
+    if (active && nav.scrollWidth > nav.clientWidth) {
+      nav.scrollLeft =
+        active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+    }
+    update();
 
-      menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? "Open Menu" : "Close Menu");
-
-      menuItems.classList.toggle("hidden");
-      menuIcon.classList.toggle("hidden");
-      closeIcon.classList.toggle("hidden");
+    // Écouteurs retirés à la navigation suivante (le header est remplacé)
+    const controller = new AbortController();
+    const { signal } = controller;
+    const step = () => Math.max(120, nav.clientWidth * 0.6);
+    prev?.addEventListener(
+      "click",
+      () => nav.scrollBy({ left: -step(), behavior: "smooth" }),
+      { signal }
+    );
+    next?.addEventListener(
+      "click",
+      () => nav.scrollBy({ left: step(), behavior: "smooth" }),
+      { signal }
+    );
+    nav.addEventListener("scroll", update, { passive: true, signal });
+    window.addEventListener("resize", update, { passive: true, signal });
+    document.addEventListener("astro:before-swap", () => controller.abort(), {
+      once: true,
+      signal,
     });
   }
 
-  toggleNav();
-
-  // Runs on view transitions navigation
-  document.addEventListener("astro:after-swap", toggleNav);
+  document.addEventListener("astro:page-load", setupNavScroll);
 </script>

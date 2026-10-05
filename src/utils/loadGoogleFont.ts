@@ -34,20 +34,13 @@ async function loadGoogleFonts(
 ): Promise<
   Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>
 > {
-  const fontsConfig = [
-    {
-      name: "IBM Plex Mono",
-      font: "IBM+Plex+Mono",
-      weight: 400,
-      style: "normal",
-    },
-    {
-      name: "IBM Plex Mono",
-      font: "IBM+Plex+Mono",
-      weight: 700,
-      style: "bold",
-    },
-  ];
+  // Inter, comme sur le site (src/styles/global.css)
+  const fontsConfig = [400, 600, 700].map(weight => ({
+    name: "Inter",
+    font: "Inter",
+    weight,
+    style: "normal",
+  }));
 
   const fonts = await Promise.all(
     fontsConfig.map(async ({ name, font, weight, style }) => {

@@ -1,0 +1,10 @@
+---
+import type { GetStaticPaths } from "astro";
+import PostList from "@/views/PostList.astro";
+import { postListPaths } from "@/utils/postRoutes";
+
+export const getStaticPaths = (({ paginate }) =>
+  postListPaths(paginate, "en")) satisfies GetStaticPaths;
+---
+
+<PostList {...Astro.props} />

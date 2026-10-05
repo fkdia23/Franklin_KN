@@ -1,0 +1,50 @@
+---
+import type { Status } from "@/knowledge.config";
+import { PREVIEW, statusLabelsFor } from "@/utils/knowledge";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+export interface Props {
+  status?: Status;
+  /** En dev, signale ce qui ne sera pas publié en production. */
+  published?: boolean;
+}
+
+const { status, published = true } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const STATUS_LABELS = statusLabelsFor(lang);
+
+const tone: Record<Status, string> = {
+  planned: "border-border text-muted-foreground",
+  "in-progress": "border-accent/50 text-accent",
+  completed:
+    "border-emerald-600/40 text-emerald-700 dark:border-emerald-400/40 dark:text-emerald-400",
+  paused:
+    "border-amber-600/40 text-amber-700 dark:border-amber-400/40 dark:text-amber-400",
+  abandoned: "border-border text-muted-foreground",
+};
+
+const pill =
+  "rounded border px-1.5 py-px text-[0.68rem] font-semibold tracking-wide whitespace-nowrap uppercase";
+---
+
+{
+  (status || (PREVIEW && !published)) && (
+    <span class="inline-flex flex-wrap items-center gap-1.5 align-middle">
+      {status && (
+        <span class:list={[pill, tone[status]]}>{STATUS_LABELS[status]}</span>
+      )}
+      {PREVIEW && !published && (
+        <span
+          class:list={[
+            pill,
+            "border-transparent bg-muted text-muted-foreground",
+          ]}
+          title={t("k.unpublishedHint")}
+        >
+          {t("k.unpublished")}
+        </span>
+      )}
+    </span>
+  )
+}

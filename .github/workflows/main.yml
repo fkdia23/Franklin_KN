@@ -27,6 +27,11 @@ jobs:
         
       - name: Build project
         run: npm run build  # ou yarn build, adaptez selon votre commande de build
+        env:
+          # Thème de couleurs : ambre | classique (voir src/utils/theme.ts).
+          # Pour changer sans toucher au code : Settings > Secrets and variables
+          # > Actions > Variables > PUBLIC_THEME, puis relancer le déploiement.
+          PUBLIC_THEME: ${{ vars.PUBLIC_THEME || 'ambre' }}
         # Si vous n'avez pas de build, supprimez cette étape
 
       - name: Deploy to fkdia23 repo

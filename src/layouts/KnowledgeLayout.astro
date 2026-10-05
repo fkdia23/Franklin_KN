@@ -1,0 +1,170 @@
+---
+import type { MarkdownHeading } from "astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
+import BackToTopButton from "@/components/BackToTopButton.astro";
+import ArticleScripts from "@/components/ArticleScripts.astro";
+import DevNotice from "@/components/knowledge/DevNotice.astro";
+import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
+import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
+import { SITE } from "@/config";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+/**
+ * Mise en page commune aux pages de contenu du Knowledge Hub : cours,
+ * modules, notes, expériences, projets, papers, références, journal.
+ */
+export interface Props {
+  title: string;
+  description?: string;
+  breadcrumb: { label: string; href?: string }[];
+  /** Petite ligne au-dessus du titre (« Module 04 · Build Your LLM… »). */
+  eyebrow?: { label: string; href?: string };
+  /** Faux uniquement en dev, pour ce qui ne sera pas publié. */
+  published?: boolean;
+  headings?: MarkdownHeading[];
+  ogImage?: string;
+  prev?: { title: string; url: string; label: string };
+  next?: { title: string; url: string; label: string };
+}
+
+const {
+  title,
+  description,
+  breadcrumb,
+  eyebrow,
+  published = true,
+  headings = [],
+  ogImage,
+  prev,
+  next,
+} = Astro.props;
+
+const hasToc = headings.some(h => h.depth >= 2 && h.depth <= 4);
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<Layout
+  title={`${title} | ${SITE.title}`}
+  description={description ?? t("site.description")}
+  {ogImage}
+  ogImageSize={ogImage ? { width: 1200, height: 630 } : undefined}
+  ogType="article"
+  scrollSmooth
+>
+  <Header />
+  <Breadcrumb items={breadcrumb} />
+  <main
+    id="main-content"
+    class="mx-auto w-full max-w-app px-4 pt-4 pb-12"
+    data-pagefind-body={published ? "" : undefined}
+  >
+    <DevNotice show={!published}>
+      {t("k.devPage")}
+    </DevNotice>
+
+    {
+      eyebrow &&
+        (eyebrow.href ? (
+          <a
+            href={eyebrow.href}
+            class="text-xs font-semibold tracking-wide text-accent uppercase hover:underline"
+          >
+            {eyebrow.label}
+          </a>
+        ) : (
+          <p class="text-xs font-semibold tracking-wide text-accent uppercase">
+            {eyebrow.label}
+          </p>
+        ))
+    }
+    <h1
+      class="mt-2 text-[1.9rem] leading-[1.15] font-bold tracking-tight sm:text-[2.4rem]"
+    >
+      {title}
+    </h1>
+    {
+      description && (
+        <p class="mt-3 text-lg leading-relaxed text-muted-foreground">
+          {description}
+        </p>
+      )
+    }
+    <!-- Statut, dates, liens… -->
+    <slot name="meta" />
+
+    {
+      hasToc && (
+        <details class="group mt-6 rounded-md border border-border bg-muted/30 px-4 py-3 min-[1340px]:hidden">
+          <summary class="cursor-pointer list-none text-sm font-semibold tracking-wide text-foreground uppercase select-none">
+            {t("toc.title")}
+          </summary>
+          <div class="mt-3">
+            <TableOfContents {headings} heading={false} />
+          </div>
+        </details>
+      )
+    }
+
+    <div class="relative">
+      <article
+        id="article"
+        class="app-prose mx-auto mt-8 max-w-app prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+      >
+        <slot />
+      </article>
+      {
+        hasToc && (
+          <aside class="absolute start-full top-0 hidden h-full ps-8 min-[1340px]:block">
+            <div class="sticky top-20 w-56">
+              <TableOfContents {headings} />
+            </div>
+          </aside>
+        )
+      }
+    </div>
+
+    <!-- Listes sous l'article (modules d'un cours…) -->
+    <slot name="after" />
+
+    <BackToTopButton />
+
+    {
+      (prev || next) && (
+        <nav
+          data-pagefind-ignore
+          aria-label={t("k.pageNav")}
+          class="mt-12 grid grid-cols-1 gap-6 border-t border-border pt-6 sm:grid-cols-2"
+        >
+          {prev && (
+            <a href={prev.url} class="flex w-full gap-1 hover:opacity-75">
+              <IconChevronLeft class="inline-block flex-none rtl:rotate-180" />
+              <div>
+                <span class="text-sm text-muted-foreground">{prev.label}</span>
+                <div class="text-accent">{prev.title}</div>
+              </div>
+            </a>
+          )}
+          {next && (
+            <a
+              href={next.url}
+              class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
+            >
+              <div>
+                <span class="text-sm text-muted-foreground">{next.label}</span>
+                <div class="text-accent">{next.title}</div>
+              </div>
+              <IconChevronRight class="inline-block flex-none rtl:rotate-180" />
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </main>
+  <Footer />
+</Layout>
+
+<ArticleScripts />

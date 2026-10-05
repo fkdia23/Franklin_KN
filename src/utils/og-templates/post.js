@@ -1,229 +1,220 @@
 import satori from "satori";
-// import { html } from "satori-html";
+import { SITE } from "@/config";
+import { categoriesFor } from "../categories";
 import loadGoogleFonts from "../loadGoogleFont";
-import { logoDataUri } from "../logo";
+import {
+  OG,
+  background,
+  brand,
+  wordmark,
+  coverDataUri,
+  h,
+  img,
+  photoDataUri,
+  truncate,
+} from "./shared";
 
-// const markup = html`<div
-//       style={{
-//         background: "#fefbfb",
-//         width: "100%",
-//         height: "100%",
-//         display: "flex",
-//         alignItems: "center",
-//         justifyContent: "center",
-//       }}
-//     >
-//       <div
-//         style={{
-//           position: "absolute",
-//           top: "-1px",
-//           right: "-1px",
-//           border: "4px solid #000",
-//           background: "#ecebeb",
-//           opacity: "0.9",
-//           borderRadius: "4px",
-//           display: "flex",
-//           justifyContent: "center",
-//           margin: "2.5rem",
-//           width: "88%",
-//           height: "80%",
-//         }}
-//       />
+const HOST = new URL(SITE.website).hostname;
+const COVER = { width: 440, height: 248 }; // 16:9
 
-//       <div
-//         style={{
-//           border: "4px solid #000",
-//           background: "#fefbfb",
-//           borderRadius: "4px",
-//           display: "flex",
-//           justifyContent: "center",
-//           margin: "2rem",
-//           width: "88%",
-//           height: "80%",
-//         }}
-//       >
-//         <div
-//           style={{
-//             display: "flex",
-//             flexDirection: "column",
-//             justifyContent: "space-between",
-//             margin: "20px",
-//             width: "90%",
-//             height: "90%",
-//           }}
-//         >
-//           <p
-//             style={{
-//               fontSize: 72,
-//               fontWeight: "bold",
-//               maxHeight: "84%",
-//               overflow: "hidden",
-//             }}
-//           >
-//             {post.data.title}
-//           </p>
-//           <div
-//             style={{
-//               display: "flex",
-//               justifyContent: "space-between",
-//               width: "100%",
-//               marginBottom: "8px",
-//               fontSize: 28,
-//             }}
-//           >
-//             <span>
-//               by{" "}
-//               <span
-//                 style={{
-//                   color: "transparent",
-//                 }}
-//               >
-//                 "
-//               </span>
-//               <span style={{ overflow: "hidden", fontWeight: "bold" }}>
-//                 {post.data.author}
-//               </span>
-//             </span>
-
-//             <span style={{ overflow: "hidden", fontWeight: "bold" }}>
-//               {SITE.title}
-//             </span>
-//           </div>
-//         </div>
-//       </div>
-//     </div>`;
-
+/** Aperçu d'un post du blog. */
 export default async post => {
-  return satori(
+  const { title, description, category, lang, cover } = post.data;
+  return articleOgImage({
+    label: categoriesFor(lang)[category].label,
+    lang,
+    title,
+    description,
+    cover,
+  });
+};
+
+/**
+ * Aperçu générique d'une page « article » : pastille, langue, titre,
+ * description, couverture facultative. Sert aux posts et au Knowledge Hub.
+ * @param {{ label: string, title: string, description?: string, lang?: string, cover?: unknown }} options
+ */
+export async function articleOgImage({
+  label: rawLabel,
+  lang,
+  title,
+  description = "",
+  cover,
+}) {
+  const label = rawLabel.toUpperCase();
+  const coverSrc = await coverDataUri(cover, COVER.width * 2, COVER.height * 2);
+  const photo = await photoDataUri(112);
+
+  // Sans couverture, le texte occupe toute la largeur : on l'agrandit
+  const titleText = truncate(title, 90);
+  const descText = truncate(description, coverSrc ? 120 : 220);
+  const titleSize = coverSrc
+    ? titleText.length <= 40
+      ? 52
+      : titleText.length <= 70
+        ? 44
+        : 38
+    : titleText.length <= 50
+      ? 60
+      : 50;
+
+  const header = h(
+    "div",
     {
-      type: "div",
-      props: {
-        style: {
-          background: "#fefbfb",
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        children: [
-          {
-            type: "div",
-            props: {
-              style: {
-                position: "absolute",
-                top: "-1px",
-                right: "-1px",
-                border: "4px solid #000",
-                background: "#ecebeb",
-                opacity: "0.9",
-                borderRadius: "4px",
-                display: "flex",
-                justifyContent: "center",
-                margin: "2.5rem",
-                width: "88%",
-                height: "80%",
-              },
-            },
-          },
-          {
-            type: "div",
-            props: {
-              style: {
-                border: "4px solid #000",
-                background: "#fefbfb",
-                borderRadius: "4px",
-                display: "flex",
-                justifyContent: "center",
-                margin: "2rem",
-                width: "88%",
-                height: "80%",
-              },
-              children: {
-                type: "div",
-                props: {
-                  style: {
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    margin: "20px",
-                    width: "90%",
-                    height: "90%",
-                  },
-                  children: [
-                    {
-                      type: "p",
-                      props: {
-                        style: {
-                          fontSize: 72,
-                          fontWeight: "bold",
-                          maxHeight: "84%",
-                          overflow: "hidden",
-                        },
-                        children: post.data.title,
-                      },
-                    },
-                    {
-                      type: "div",
-                      props: {
-                        style: {
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          width: "100%",
-                          marginBottom: "8px",
-                          fontSize: 28,
-                        },
-                        children: [
-                          {
-                            type: "span",
-                            props: {
-                              children: [
-                                "by ",
-                                {
-                                  type: "span",
-                                  props: {
-                                    style: { color: "transparent" },
-                                    children: '"',
-                                  },
-                                },
-                                {
-                                  type: "span",
-                                  props: {
-                                    style: {
-                                      overflow: "hidden",
-                                      fontWeight: "bold",
-                                    },
-                                    children: post.data.author,
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                          {
-                            type: "img",
-                            props: {
-                              src: logoDataUri("light"),
-                              width: 64,
-                              height: 64,
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        ],
-      },
+      position: "absolute",
+      top: 52,
+      left: 64,
+      right: 64,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
+    h(
+      "div",
+      { display: "flex", alignItems: "center" },
+      h(
+        "div",
+        {
+          padding: "6px 14px",
+          borderRadius: 6,
+          backgroundColor: OG.band,
+          color: OG.bandFg,
+          fontSize: 17,
+          fontWeight: 700,
+          letterSpacing: 2,
+        },
+        label
+      ),
+      ...(lang
+        ? [
+            h(
+              "div",
+              {
+                marginLeft: 12,
+                padding: "4px 12px",
+                borderRadius: 6,
+                border: `2px solid ${OG.border}`,
+                color: OG.muted,
+                fontSize: 17,
+                fontWeight: 600,
+              },
+              lang.toUpperCase()
+            ),
+          ]
+        : [])
+    ),
+    brand(40, 22)
+  );
+
+  const body = h(
+    "div",
+    {
+      position: "absolute",
+      top: 136,
+      left: 64,
+      right: 64,
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+    },
+    h(
+      "div",
+      {
+        display: "flex",
+        flexDirection: "column",
+        width: coverSrc ? 610 : 1072,
+      },
+      h(
+        "div",
+        {
+          fontSize: titleSize,
+          fontWeight: 700,
+          lineHeight: 1.15,
+          letterSpacing: -0.5,
+          color: OG.fg,
+        },
+        titleText
+      ),
+      h(
+        "div",
+        { marginTop: 22, fontSize: 24, lineHeight: 1.4, color: OG.muted },
+        descText
+      )
+    ),
+    coverSrc
+      ? img(coverSrc, COVER.width, COVER.height, {
+          borderRadius: 12,
+          border: `2px solid ${OG.border}`,
+          objectFit: "cover",
+        })
+      : h("div", {})
+  );
+
+  const footer = h(
+    "div",
+    {
+      position: "absolute",
+      left: 64,
+      right: 64,
+      bottom: 48,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    h(
+      "div",
+      { display: "flex", alignItems: "center" },
+      h(
+        "div",
+        {
+          display: "flex",
+          padding: 3,
+          borderRadius: 999,
+          backgroundColor: OG.band,
+        },
+        img(photo, 56, 56, { borderRadius: 999 })
+      ),
+      h(
+        "div",
+        { display: "flex", flexDirection: "column", marginLeft: 16 },
+        wordmark({ fontSize: 22, fontWeight: 700, color: OG.fg }),
+        h("div", { fontSize: 18, color: OG.muted }, SITE.role)
+      )
+    ),
+    h("div", { fontSize: 20, color: OG.muted }, HOST)
+  );
+
+  const text = [
+    label,
+    lang ? lang.toUpperCase() : "",
+    titleText,
+    descText,
+    SITE.title,
+    SITE.role,
+    HOST,
+  ].join("");
+
+  return satori(
+    h(
+      "div",
+      {
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        position: "relative",
+        ...background,
+        fontFamily: "Inter",
+        color: OG.fg,
+      },
+      header,
+      body,
+      footer
+    ),
     {
       width: 1200,
       height: 630,
       embedFont: true,
-      fonts: await loadGoogleFonts(post.data.title + post.data.author + "by"),
+      fonts: await loadGoogleFonts(text),
     }
   );
-};
+}

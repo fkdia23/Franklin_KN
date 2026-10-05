@@ -1,0 +1,18 @@
+---
+import { SITE } from "@/config";
+
+/**
+ * Nom du site en deux couleurs, comme « Sebastian Raschka » :
+ * « Franklin » dans la couleur du texte, « KN » en couleur d'accent.
+ * Le séparateur (espace ou tiret bas) est repris tel quel.
+ */
+const escape = (text: string) =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const match = SITE.title.match(/^(.+?)([ _])(.+)$/);
+const html = match
+  ? `${escape(match[1])}<span class="text-accent">${match[2] === "_" ? "_" : " "}${escape(match[3])}</span>`
+  : escape(SITE.title);
+---
+
+<Fragment set:html={html} />

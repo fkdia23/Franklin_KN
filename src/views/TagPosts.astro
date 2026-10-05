@@ -1,0 +1,45 @@
+---
+import type { Page } from "astro";
+import type { CollectionEntry } from "astro:content";
+import Main from "@/layouts/Main.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Card from "@/components/Card.astro";
+import Pagination from "@/components/Pagination.astro";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import { SITE } from "@/config";
+
+/** Posts d'un tag — /tags/<tag>/ et /en/tags/<tag>/. */
+export interface Props {
+  page: Page<CollectionEntry<"blog">>;
+  tagName: string;
+}
+
+const tag = Astro.params.tag ?? "";
+const { page, tagName } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const description =
+  lang === "fr"
+    ? `${t("tag.description")} « ${tagName} ».`
+    : `${t("tag.description")} “${tagName}”.`;
+---
+
+<Layout title={`${t("tag.title")}${tagName} | ${SITE.title}`} {description}>
+  <Header />
+  <Main
+    pageTitle={[t("tag.title"), `${tagName}`]}
+    titleTransition={tag}
+    pageDesc={description}
+  >
+    <h1 slot="title" transition:name={tag}>{`Tag:${tag}`}</h1>
+    <ul>
+      {page.data.map(post => <Card {post} />)}
+    </ul>
+  </Main>
+
+  <Pagination {page} />
+
+  <Footer noMarginTop={page.lastPage > 1} />
+</Layout>

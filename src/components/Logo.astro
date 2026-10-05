@@ -1,13 +1,8 @@
 ---
-import {
-  LOGO_PATHS,
-  LOGO_RADIUS,
-  LOGO_STROKE,
-  LOGO_VIEWBOX,
-} from "@/utils/logo";
+import { LOGO_GLYPHS, LOGO_RADIUS, LOGO_VIEWBOX } from "@/utils/logo";
 
 export interface Props {
-  /** Côté du badge en pixels. */
+  /** Côté du monogramme en pixels. */
   size?: number;
   class?: string;
 }
@@ -15,26 +10,15 @@ export interface Props {
 const { size = 36, class: className } = Astro.props;
 ---
 
+<!-- Couleurs du thème (variables CSS --logo-badge / --logo-mark) -->
 <svg
   viewBox={LOGO_VIEWBOX}
   width={size}
   height={size}
-  role="img"
-  aria-label="franklin_kn"
+  aria-hidden="true"
   class:list={["shrink-0", className]}
 >
-  <rect
-    width="128"
-    height="128"
-    rx={LOGO_RADIUS}
-    fill="var(--accent)"
-  />
-  <g
-    fill="none"
-    stroke="var(--background)"
-    stroke-width={LOGO_STROKE}
-    stroke-linejoin="round"
-  >
-    {LOGO_PATHS.map(d => <path d={d} />)}
-  </g>
+  <rect width="128" height="128" rx={LOGO_RADIUS} fill="var(--logo-badge)"
+  ></rect>
+  <path fill="var(--logo-mark)" d={LOGO_GLYPHS}></path>
 </svg>

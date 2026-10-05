@@ -12,6 +12,8 @@ tags:
   - LoRA
   - MLOps
 huggingface: https://huggingface.co/fknguedia/qwen_2.5_coder_sqlagent_pilot
+cover: ../../assets/images/covers/qwen-sql-hf.jpg
+coverAlt: "Carte Hugging Face du modèle fknguedia/qwen_2.5_coder_sqlagent_pilot, fine-tuné avec Unsloth"
 description: >
   Concevoir et déployer des modèles LLM spécialisés sur des domaines métier
   via fine-tuning LLaMA/Qwen avec LoRA, puis déploiement autonome sur

@@ -1,0 +1,50 @@
+---
+import type { ProgressRow } from "@/utils/knowledge";
+
+export interface Props {
+  rows: ProgressRow[];
+  /** Couleur du track (sinon couleur d'accent du thème). */
+  color?: string;
+  /** Affiche « 3/14 » à côté du pourcentage. */
+  counts?: boolean;
+  class?: string;
+}
+
+const { rows, color, counts = false, class: className } = Astro.props;
+---
+
+<ul
+  class:list={["space-y-2.5", className]}
+  style={color ? `--track-color: ${color}` : undefined}
+>
+  {
+    rows.map(row => (
+      <li class="grid grid-cols-[minmax(0,10rem)_1fr_auto] items-center gap-3 text-sm">
+        <span class="truncate text-muted-foreground" title={row.label}>
+          {row.label}
+        </span>
+        <span
+          class="h-2 overflow-hidden rounded-full bg-muted"
+          role="progressbar"
+          aria-label={row.label}
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow={row.percent}
+        >
+          <span
+            class="block h-full rounded-full bg-[var(--track-color,var(--accent))]"
+            style={`width: ${row.percent}%`}
+          />
+        </span>
+        <span class="text-end font-medium whitespace-nowrap tabular-nums">
+          {row.percent} %
+          {counts && (
+            <span class="ms-1 font-normal text-muted-foreground">
+              ({row.done}/{row.total})
+            </span>
+          )}
+        </span>
+      </li>
+    ))
+  }
+</ul>

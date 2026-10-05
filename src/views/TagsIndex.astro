@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import Main from "@/layouts/Main.astro";
+import Layout from "@/layouts/Layout.astro";
+import Tag from "@/components/Tag.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import getUniqueTags from "@/utils/getUniqueTags";
+import { getLocalizedPosts } from "@/utils/translations";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import { SITE } from "@/config";
+
+/** Liste des tags — /tags/ et /en/tags/. */
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const tags = getUniqueTags(
+  getLocalizedPosts(await getCollection("blog"), lang)
+);
+---
+
+<Layout
+  title={`${t("tags.title")} | ${SITE.title}`}
+  description={t("tags.description")}
+>
+  <Header />
+  <Main pageTitle={t("tags.title")} pageDesc={t("tags.description")}>
+    <ul>
+      {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} size="lg" />)}
+    </ul>
+  </Main>
+  <Footer />
+</Layout>

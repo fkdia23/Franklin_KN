@@ -1,0 +1,20 @@
+---
+import { PREVIEW } from "@/utils/knowledge";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+/** Bandeau affiché uniquement en local, sur ce qui ne sera pas publié. */
+export interface Props {
+  show?: boolean;
+}
+
+const { show = true } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+{
+  PREVIEW && show && (
+    <p class="mb-6 rounded-md border border-border bg-muted px-4 py-2.5 text-sm text-muted-foreground">
+      <strong class="text-foreground">{t("k.devPreview")}</strong> — <slot />
+    </p>
+  )
+}

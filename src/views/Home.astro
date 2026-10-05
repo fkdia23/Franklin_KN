@@ -1,0 +1,151 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Card from "@/components/Card.astro";
+import WordmarkCore from "@/components/Wordmark_core.astro";
+import { getLocalizedPosts } from "@/utils/translations";
+import { getLangFromUrl, localizePath, useTranslations } from "@/i18n/utils";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+// Photo entière recadrée au carré (tour Eiffel visible), comme sur l'ancien site
+import profilePhoto from "@/assets/images/profile-square.jpg";
+import { SITE } from "@/config";
+
+/** Page d'accueil — / et /en/. */
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const home = localizePath("/", lang);
+const postsHref = localizePath("/posts/", lang);
+
+const latestPosts = getLocalizedPosts(await getCollection("blog"), lang).slice(
+  0,
+  SITE.postPerIndex
+);
+
+const link =
+  "text-accent underline decoration-accent/35 underline-offset-[3px] hover:decoration-accent";
+
+const copy = {
+  fr: {
+    alt: `Portrait de ${SITE.name}`,
+    hello: "Bonjour, je suis",
+    role: "Je suis",
+    intro:
+      ". Je conçois et industrialise des pipelines de données et des systèmes d'IA, de l'ingestion jusqu'à la production, avec une exigence constante de fiabilité, d'observabilité et de maîtrise des coûts.",
+    work: "Mon travail couvre l'orchestration de pipelines (Airflow, Spark, Azure Data Factory, Databricks), les systèmes RAG traçables, les agents LLM et le fine-tuning de modèles avec LoRA.",
+    site: "Sur ce site, je présente mes projets, mes hackathons et des analyses de solutions gagnantes de compétitions Kaggle. Mon parcours complet est disponible sur",
+    cta: "Voir les posts",
+    about: "À propos",
+  },
+  en: {
+    alt: `Portrait of ${SITE.name}`,
+    hello: "Hi, I'm",
+    role: "I'm a",
+    intro:
+      ". I design and ship data pipelines and AI systems, from ingestion to production, with a constant focus on reliability, observability and cost control.",
+    work: "My work covers pipeline orchestration (Airflow, Spark, Azure Data Factory, Databricks), traceable RAG systems, LLM agents and model fine-tuning with LoRA.",
+    site: "On this site, I share my projects, hackathons and analyses of winning Kaggle solutions. My full background is on",
+    cta: "See the posts",
+    about: "About",
+  },
+}[lang];
+---
+
+<Layout title={SITE.title}>
+  <Header />
+
+  <main id="main-content" data-layout="index" data-home={home}>
+    <!-- PRÉSENTATION -->
+    <section id="hero" class="pt-10 pb-14 sm:pt-16">
+      <div
+        class="flex flex-col gap-8 sm:flex-row-reverse sm:items-center sm:gap-12"
+      >
+        <!-- Cadre de l'ancien site : anneau fin aux couleurs du thème, séparé
+             de la photo par un liseré de la couleur du fond -->
+        <Image
+          src={profilePhoto}
+          alt={copy.alt}
+          widths={[160, 320, 384]}
+          sizes="(min-width: 640px) 192px, 160px"
+          loading="eager"
+          class="m-1 size-40 shrink-0 rounded-full object-cover ring-2 ring-accent/50 ring-offset-4 ring-offset-background sm:size-48"
+        />
+
+        <div class="min-w-0 flex-1">
+          <h1
+            class="text-[1.75rem] leading-tight font-bold tracking-tight sm:text-[2.1rem]"
+          >
+            {copy.hello}
+            <span class="whitespace-nowrap"><WordmarkCore /></span>
+          </h1>
+          <div class="mt-5 space-y-4 text-[1.0625rem] leading-relaxed">
+            <p>
+              {copy.role}
+              <strong class="font-semibold">Data &amp; AI Engineer</strong>{
+                copy.intro
+              }
+            </p>
+            <p>{copy.work}</p>
+            <p>
+              {copy.site}
+              <a
+                href={SITE.profile}
+                target="_blank"
+                rel="noopener noreferrer"
+                class={link}>LinkedIn</a
+              >.
+            </p>
+          </div>
+
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a href={postsHref} class="btn btn-primary">
+              {copy.cta}
+              <IconArrowRight class="size-4 rtl:-rotate-180" />
+            </a>
+            <a href={localizePath("/about/", lang)} class="btn btn-secondary">
+              {copy.about}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DERNIERS POSTS -->
+    {
+      latestPosts.length > 0 && (
+        <section id="posts" class="pb-16">
+          <div class="mb-6 flex items-baseline justify-between border-b border-border pb-3">
+            <h2 class="text-xl font-semibold tracking-tight">
+              {t("posts.latest")}
+            </h2>
+            <a
+              href={postsHref}
+              class="text-sm font-medium text-accent hover:underline"
+            >
+              {t("posts.seeAll")}
+            </a>
+          </div>
+          <ul class="grid gap-6 sm:grid-cols-2">
+            {latestPosts.map(post => (
+              <Card {post} layout="grid" variant="h3" />
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  // Le bouton « Retour » d'un post ramène à l'accueil de la bonne langue
+  document.addEventListener("astro:page-load", () => {
+    const main = document.querySelector<HTMLElement>("#main-content");
+    if (main?.dataset.layout === "index") {
+      sessionStorage.setItem("backUrl", main.dataset.home ?? "/");
+    }
+  });
+</script>

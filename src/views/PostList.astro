@@ -1,0 +1,137 @@
+---
+import type { Page } from "astro";
+import type { CollectionEntry } from "astro:content";
+import Main from "@/layouts/Main.astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Card from "@/components/Card.astro";
+import Pagination from "@/components/Pagination.astro";
+import {
+  CATEGORY_KEYS,
+  categoriesFor,
+  type Category,
+} from "@/utils/categories";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import { SITE } from "@/config";
+
+/** Liste des posts — /posts/ et /en/posts/ (voir src/utils/postRoutes.ts). */
+export interface Props {
+  page: Page<CollectionEntry<"blog">>;
+  counts: Record<Category, number>;
+}
+
+const { page, counts } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const CATEGORIES = categoriesFor(lang);
+
+// Les filtres n'apparaissent que s'il y a au moins deux catégories à départager
+const filters = CATEGORY_KEYS.filter(key => counts[key] > 0);
+
+const chip =
+  "rounded-full border border-border px-3 py-1 text-sm transition-colors hover:border-accent hover:text-accent aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-background";
+---
+
+<Layout
+  title={`${t("posts.title")} | ${SITE.title}`}
+  description={t("posts.description")}
+>
+  <Header />
+  <Main pageTitle={t("posts.title")} pageDesc={t("posts.description")}>
+    {
+      filters.length > 1 && (
+        <div
+          role="group"
+          aria-label={t("posts.filters")}
+          class="flex flex-wrap gap-2"
+          data-post-filters
+        >
+          <button
+            type="button"
+            data-filter="all"
+            aria-pressed="true"
+            class={chip}
+          >
+            {t("posts.all")} <span class="opacity-70">{page.total}</span>
+          </button>
+          {filters.map(key => (
+            <button
+              type="button"
+              data-filter={key}
+              aria-pressed="false"
+              class={chip}
+            >
+              {CATEGORIES[key].plural}{" "}
+              <span class="opacity-70">{counts[key]}</span>
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    <ul data-post-list>
+      {page.data.map(post => <Card {post} />)}
+    </ul>
+    <p data-post-empty hidden class="py-8 text-center text-muted-foreground">
+      {t("posts.empty")}
+    </p>
+  </Main>
+
+  <Pagination {page} />
+
+  <Footer noMarginTop={page.lastPage > 1} />
+</Layout>
+
+<script>
+  /** Filtre par catégorie côté client ; l'état vit dans l'URL (?categorie=kaggle). */
+  function setupPostFilters() {
+    const group = document.querySelector("[data-post-filters]");
+    if (!group) return;
+
+    const buttons = Array.from(
+      group.querySelectorAll<HTMLButtonElement>("[data-filter]")
+    );
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-post-list] > li")
+    );
+    const empty = document.querySelector<HTMLElement>("[data-post-empty]");
+
+    function apply(filter: string) {
+      let visible = 0;
+      for (const card of cards) {
+        card.hidden = filter !== "all" && card.dataset.category !== filter;
+        if (!card.hidden) visible++;
+      }
+      for (const button of buttons) {
+        button.setAttribute(
+          "aria-pressed",
+          String(button.dataset.filter === filter)
+        );
+      }
+      if (empty) empty.hidden = visible > 0;
+
+      const url = new URL(window.location.href);
+      if (filter === "all") url.searchParams.delete("categorie");
+      else url.searchParams.set("categorie", filter);
+      history.replaceState(history.state, "", url);
+      // Le bouton « retour » d'un post ramène à la liste filtrée
+      sessionStorage.setItem("backUrl", url.pathname + url.search);
+    }
+
+    for (const button of buttons) {
+      button.addEventListener("click", () =>
+        apply(button.dataset.filter ?? "all")
+      );
+    }
+
+    const initial = new URLSearchParams(window.location.search).get(
+      "categorie"
+    );
+    if (initial && buttons.some(button => button.dataset.filter === initial)) {
+      apply(initial);
+    }
+  }
+
+  document.addEventListener("astro:page-load", setupPostFilters);
+</script>

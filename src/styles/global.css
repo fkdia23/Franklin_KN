@@ -1,27 +1,46 @@
 @import "tailwindcss";
 @import "./typography.css";
 
+/* Le kit de marque (SVG générés) n'a pas de classes Tailwind à détecter */
+@source not "../../public/brand";
+
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-:root,
-html[data-theme="light"] {
-  /* Light — beige chaud assorti au thème charbon + ambre */
-  --background: #faf9f6;
-  --foreground: #1c1b19;
-  --accent: #8a5e12;
-  --muted: #efece4;
-  --muted-foreground: #6b6a63;
-  --border: #e3e0d7;
+/* ===== Police : Inter (SIL OFL 1.1), auto-hébergée dans public/fonts/ ===== */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/inter-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/inter-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-html[data-theme="dark"] {
-  /* Dark — charbon + ambre */
-  --background: #18181b;
-  --foreground: #e8e6e1;
-  --accent: #d4a843;
-  --muted: #27272a;
-  --muted-foreground: #a1a09a;
-  --border: #3a3a40;
+/* ===== Thèmes =====
+ * Les couleurs (--background, --foreground, --accent, --muted,
+ * --muted-foreground, --border, --primary, --logo-*) sont définies dans
+ * src/utils/theme.ts et injectées par Layout.astro, selon PUBLIC_THEME
+ * (« ambre » ou « classique ») et le mode clair / sombre.
+ */
+
+@theme {
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 @theme inline {
@@ -31,6 +50,8 @@ html[data-theme="dark"] {
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 }
 
 @layer base {
@@ -42,12 +63,20 @@ html[data-theme="dark"] {
   html {
     @apply overflow-y-scroll scroll-smooth;
   }
+  /* (ex-<style> de Layout.astro, déplacé ici : le parseur ESLint d'Astro
+     se trompait de position avec les accents du frontmatter) */
+  html,
   body {
-    @apply flex min-h-svh flex-col bg-background font-mono text-foreground selection:bg-accent/75 selection:text-background;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+  body {
+    @apply flex min-h-svh flex-col bg-background font-sans text-foreground antialiased selection:bg-accent/25 selection:text-foreground;
   }
   a,
   button {
-    @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+    @apply outline-offset-2 outline-accent focus-visible:outline-2 focus-visible:outline-solid;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -63,8 +92,20 @@ html[data-theme="dark"] {
   @apply max-w-3xl;
 }
 
+/* Lien actif du menu : un simple soulignement */
 .active-nav {
-  @apply underline decoration-wavy decoration-2 underline-offset-4;
+  @apply text-foreground underline decoration-accent decoration-2 underline-offset-[7px];
+}
+
+/* Boutons d'action (accueil, À propos) */
+.btn {
+  @apply inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition-colors;
+}
+.btn-primary {
+  @apply border-primary bg-primary text-primary-foreground hover:bg-primary/90;
+}
+.btn-secondary {
+  @apply border-border text-foreground hover:border-accent hover:text-accent;
 }
 
 /* ===== Sommaire dynamique (scroll-spy) ===== */
@@ -81,6 +122,52 @@ details > summary.list-none::-webkit-details-marker {
 /* Anything that has been anchored to should have extra scroll margin */
 :target {
   scroll-margin-block: 1rem;
+}
+
+/* ===== Comparaison côte à côte (utilisable directement dans les .md) =====
+ * Deux colonnes sur desktop, empilées sur mobile. Ligne vide obligatoire
+ * après chaque <div> d'ouverture pour que le markdown soit interprété :
+ *
+ *   <div class="compare">
+ *   <div data-highlight>
+ *
+ *   #### Solution A
+ *   - …
+ *
+ *   </div>
+ *   <div>
+ *
+ *   #### Solution B
+ *   - …
+ *
+ *   </div>
+ *   </div>
+ */
+.compare {
+  display: grid;
+  gap: 1rem;
+  margin-block: 1.5rem;
+}
+@media (min-width: 640px) {
+  .compare {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.compare > div {
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  background: var(--muted);
+  padding: 0 1rem 0.85rem;
+}
+/* Colonne mise en avant (ex. la solution gagnante) */
+.compare > div[data-highlight] {
+  border-top: 3px solid var(--accent);
+}
+.compare > div > :first-child {
+  margin-top: 0.85rem;
+}
+.compare > div > :last-child {
+  margin-bottom: 0;
 }
 
 /* ===== Timeline accordéon (utilisable directement dans les .md) ===== */
@@ -199,4 +286,27 @@ details > summary.list-none::-webkit-details-marker {
   .timeline-item[open]::details-content {
     height: auto;
   }
+}
+
+/* ===== Onglets du header : défilement horizontal discret ===== */
+.nav-scroll {
+  scrollbar-width: none;
+}
+.nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+.nav-scroll[data-fade="right"] {
+  mask-image: linear-gradient(to left, transparent, #000 2rem);
+}
+.nav-scroll[data-fade="left"] {
+  mask-image: linear-gradient(to right, transparent, #000 2rem);
+}
+.nav-scroll[data-fade="left right"] {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 2rem,
+    #000 calc(100% - 2rem),
+    transparent
+  );
 }

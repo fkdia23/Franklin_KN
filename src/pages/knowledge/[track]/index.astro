@@ -1,0 +1,14 @@
+---
+import Track from "@/views/knowledge/Track.astro";
+import { loadKnowledge } from "@/utils/knowledge";
+
+export async function getStaticPaths() {
+  const tracks = await loadKnowledge("fr");
+  return tracks.map(data => ({
+    params: { track: data.track.slug },
+    props: { data },
+  }));
+}
+---
+
+<Track {...Astro.props} />

@@ -12,6 +12,8 @@ tags:
   - Databricks
   - Big Data
 github: https://github.com/fkdia23/az_dataEngineer_E2E
+cover: ../../assets/images/covers/azure-medallion.png
+coverAlt: "Architecture Azure : Data Factory, Data Lake Bronze/Silver/Gold, Databricks, Synapse et Power BI"
 description: >
   Conception d'un pipeline Big Data temps réel pour ingérer, transformer
   et restituer des indicateurs commerciaux, avec une architecture

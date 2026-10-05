@@ -9,6 +9,8 @@ draft: false
 tags:
   - RAG
 github: https://github.com/fkdia23/RAG---Deep-Linking-Search
+cover: ../../assets/images/covers/rag-tracable.png
+coverAlt: "Diagramme de séquence : upload d'un PDF, découpage, embeddings Ollama et stockage dans Neo4j"
 description: >
   Concevoir un système RAG capable de fournir des réponses précises,
   vérifiables et sourcées à partir de documents complexes, avec
@@ -19,7 +21,7 @@ J'ai développé un système **RAG (Retrieval-Augmented Generation)** de haute p
 
 ---
 
-### 🚀 Les atouts clés du prototype
+### Les atouts clés du prototype
 
 - **Fiabilité absolue :** Citations sources et traçabilité visuelle (page, document) pour éliminer l'incertitude.
 - **Maîtrise technique :** Ingestion de données non structurées, monitoring des hallucinations et boucles de feedback.
@@ -444,4 +446,4 @@ Un RAG n’est utile que s’il est **fiable dans la durée**.La précision init
   - Isolation des documents par **tenant** (multi-tenant léger via préfixe dans les IDs)
   - Chiffrement des uploads
 
-## 6. 🎥 Démo :
+## 6. Démo

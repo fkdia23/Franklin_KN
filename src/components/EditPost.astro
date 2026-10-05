@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import IconEdit from "@/assets/icons/IconEdit.svg";
 import { SITE } from "@/config";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 import IconGitHub from "@/assets/icons/IconGitHub.svg";
 
 export interface Props {
@@ -11,6 +12,7 @@ export interface Props {
 }
 
 const { hideEditPost, post, class: className = "" } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
 
 const href = "https://github.com/fkdia23";
 const showEditPost =
@@ -29,7 +31,7 @@ const showEditPost =
       ]}
     >
       <IconGitHub class="inline-block" />
-      <span>code source</span>
+      <span>{t("post.source")}</span>
     </a>
   )
 }

@@ -2,6 +2,7 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import "dayjs/locale/fr";
 import IconCalendar from "@/assets/icons/IconCalendar.svg";
 import { SITE } from "@/config";
 
@@ -10,10 +11,13 @@ dayjs.extend(timezone);
 
 export interface Props {
   class?: string;
-  size?: "sm" | "lg";
+  /** "xs" : ligne de méta des cartes. */
+  size?: "xs" | "sm" | "lg";
   timezone: string | undefined;
   pubDatetime: string | Date;
   modDatetime: string | Date | undefined | null;
+  /** Langue du post : format de la date (« 26 juin 2026 » / « Jun 26, 2026 »). */
+  lang?: "fr" | "en";
 }
 
 const {
@@ -22,6 +26,7 @@ const {
   size = "sm",
   class: className = "",
   timezone: postTimezone,
+  lang = "fr",
 } = Astro.props;
 
 /* ========== Formatted Datetime ========== */
@@ -31,25 +36,42 @@ const datetime = dayjs(isModified ? modDatetime : pubDatetime).tz(
   postTimezone || SITE.timezone
 );
 
-const date = datetime.format("D MMM, YYYY"); // e.g., '22 Mar, 2025'
+const date = datetime
+  .locale(lang)
+  .format(lang === "fr" ? "D MMM YYYY" : "MMM D, YYYY");
 ---
 
-<div class:list={["flex items-center gap-x-2 opacity-80", className]}>
+<div
+  class:list={[
+    "flex items-center opacity-80",
+    size === "xs" ? "gap-x-1" : "gap-x-2",
+    className,
+  ]}
+>
   <IconCalendar
     class:list={[
-      "inline-block size-6 min-w-[1.375rem]",
+      "inline-block",
+      size === "xs" ? "size-4" : "size-6 min-w-[1.375rem]",
       { "scale-90": size === "sm" },
     ]}
   />
   {
     isModified && (
-      <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>
-        Updated:
+      <span
+        class:list={[
+          size === "xs" ? "text-xs" : "text-sm",
+          { "sm:text-base": size === "lg" },
+        ]}
+      >
+        {lang === "fr" ? "Mis à jour le" : "Updated:"}
       </span>
     )
   }
   <time
-    class:list={["text-sm", { "sm:text-base": size === "lg" }]}
+    class:list={[
+      size === "xs" ? "text-xs" : "text-sm",
+      { "sm:text-base": size === "lg" },
+    ]}
     datetime={datetime.toISOString()}>{date}</time
   >
 </div>

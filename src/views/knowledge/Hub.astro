@@ -1,0 +1,107 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import ProgressBars from "@/components/knowledge/ProgressBars.astro";
+import {
+  PREVIEW,
+  sectionsFor,
+  SECTION_KEYS,
+  loadKnowledge,
+  trackUrl,
+} from "@/utils/knowledge";
+import { KNOWLEDGE } from "@/knowledge.config";
+import { SITE } from "@/config";
+import { getLangFromUrl, stripLang, useTranslations } from "@/i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const SECTIONS = sectionsFor(lang);
+
+const tracks = await loadKnowledge(lang);
+
+// Aperçu de lien généré par src/pages/knowledge/[...page]/og.jpg.ts
+// (une seule image par page, partagée par le français et l'anglais)
+const ogImage = `${stripLang(Astro.url.pathname).replace(/\/?$/, "/")}og.jpg`;
+const ogImageSize = { width: 1200, height: 630 };
+
+/** « 2 cours · 5 notes · 1 expérience » à partir du contenu visible. */
+const summary = (data: (typeof tracks)[number]) =>
+  [
+    data.courses.length
+      ? `${data.courses.length} ${lang === "fr" || data.courses.length === 1 ? (lang === "fr" ? "cours" : "course") : "courses"}`
+      : undefined,
+    ...SECTION_KEYS.map(key => {
+      const n = data.sections[key].length;
+      return n ? `${n} ${SECTIONS[key].label.toLowerCase()}` : undefined;
+    }),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+---
+
+<Layout
+  title={`${KNOWLEDGE.title} | ${SITE.title}`}
+  description={t("k.description")}
+  {...tracks.length ? { ogImage, ogImageSize } : {}}
+>
+  <Header />
+  <Breadcrumb items={[{ label: KNOWLEDGE.title }]} />
+  <main
+    id="main-content"
+    class="mx-auto w-full max-w-app px-4 pt-4 pb-16"
+    data-pagefind-body
+  >
+    <h1
+      class="text-[2rem] leading-tight font-bold tracking-tight sm:text-[2.6rem]"
+    >
+      {KNOWLEDGE.title}
+    </h1>
+    <p class="mt-3 mb-10 text-lg leading-relaxed text-muted-foreground">
+      {t("k.description")}
+    </p>
+
+    {
+      tracks.length ? (
+        <ul class="grid gap-4 sm:grid-cols-2">
+          {tracks.map(data => (
+            <li class="group relative flex flex-col rounded-lg border border-border p-5 transition-colors hover:border-accent/60">
+              {PREVIEW && !data.track.enabled && (
+                <span class="mb-2 self-start rounded bg-muted px-1.5 py-px text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                  {t("k.disabled")}
+                </span>
+              )}
+              <h2 class="text-lg font-semibold tracking-tight">
+                <a
+                  href={trackUrl(data.track, lang)}
+                  class="transition-colors group-hover:text-accent after:absolute after:inset-0 after:content-['']"
+                >
+                  {data.track.title}
+                </a>
+              </h2>
+              {data.description && (
+                <p class="mt-1.5 line-clamp-3 text-sm text-muted-foreground">
+                  {data.description}
+                </p>
+              )}
+              <p class="mt-3 text-xs text-muted-foreground">
+                {summary(data) || t("k.comingSoon")}
+              </p>
+              {data.overall && data.overall.total > 0 && (
+                <ProgressBars
+                  class="mt-auto pt-4"
+                  rows={[{ ...data.overall, label: t("k.progress") }]}
+                  color={data.track.color}
+                />
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-muted-foreground">{t("k.noTrack")}</p>
+      )
+    }
+  </main>
+  <Footer />
+</Layout>

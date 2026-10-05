@@ -9,6 +9,8 @@ heroImage: "/assets/images/airflow.png"
 featured: true
 tags: ["Airflow", "Data Engineering", "Orchestration", "ETL/ELT"]
 github: https://github.com/fkdia23/airflow-yahoo-finance-analyze-StockMarket
+cover: ../../assets/images/covers/airflow-ui.jpg
+coverAlt: "Interface Airflow : grille des exécutions du DAG stock_market et logs de la tâche load_to_dw"
 
 ---
 
