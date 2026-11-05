@@ -5,7 +5,7 @@ modDatetime: 2026-10-04T09:00:00.000Z
 title: "AIMO 1 (Kaggle) : comment NuminaMath a gagné avec un LLM de 7B qui exécute son propre code"
 slug: kaggle-aimo-numinamath
 featured: false
-draft: true
+draft: false
 category: kaggle
 lang: fr
 tags:

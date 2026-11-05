@@ -24,29 +24,26 @@ const latestPosts = getLocalizedPosts(await getCollection("blog"), lang).slice(
   SITE.postPerIndex
 );
 
-const link =
-  "text-accent underline decoration-accent/35 underline-offset-[3px] hover:decoration-accent";
 
 const copy = {
   fr: {
     alt: `Portrait de ${SITE.name}`,
     hello: "Bonjour, je suis",
-    role: "Je suis",
-    intro:
-      ". Je conçois et industrialise des pipelines de données et des systèmes d'IA, de l'ingestion jusqu'à la production, avec une exigence constante de fiabilité, d'observabilité et de maîtrise des coûts.",
-    work: "Mon travail couvre l'orchestration de pipelines (Airflow, Spark, Azure Data Factory, Databricks), les systèmes RAG traçables, les agents LLM et le fine-tuning de modèles avec LoRA.",
-    site: "Sur ce site, je présente mes projets, mes hackathons et des analyses de solutions gagnantes de compétitions Kaggle. Mon parcours complet est disponible sur",
+    /** Un paragraphe par entrée. */
+    text: [
+      `Je suis <strong class="font-semibold">Data &amp; AI Engineer</strong>, spécialisé dans la conception de pipelines de données et le développement de solutions d'IA. J'aime explorer les technologies, comprendre leurs mécanismes et expérimenter de nouvelles approches autour de la Data, des LLM et du RAG.`,
+      "Ce portfolio rassemble mes projets, mes expérimentations et mes aventures à des hackathons et compétitions Kaggle.",
+    ],
     cta: "Voir les posts",
     about: "À propos",
   },
   en: {
     alt: `Portrait of ${SITE.name}`,
     hello: "Hi, I'm",
-    role: "I'm a",
-    intro:
-      ". I design and ship data pipelines and AI systems, from ingestion to production, with a constant focus on reliability, observability and cost control.",
-    work: "My work covers pipeline orchestration (Airflow, Spark, Azure Data Factory, Databricks), traceable RAG systems, LLM agents and model fine-tuning with LoRA.",
-    site: "On this site, I share my projects, hackathons and analyses of winning Kaggle solutions. My full background is on",
+    text: [
+      `I'm a <strong class="font-semibold">Data &amp; AI Engineer</strong>, specializing in designing data pipelines and building AI solutions. I enjoy exploring technologies, understanding how they work and experimenting with new approaches around data, LLMs and RAG.`,
+      "This portfolio brings together my projects, experiments and adventures in hackathons and Kaggle competitions.",
+    ],
     cta: "See the posts",
     about: "About",
   },
@@ -81,22 +78,7 @@ const copy = {
             <span class="whitespace-nowrap"><WordmarkCore /></span>
           </h1>
           <div class="mt-5 space-y-4 text-[1.0625rem] leading-relaxed">
-            <p>
-              {copy.role}
-              <strong class="font-semibold">Data &amp; AI Engineer</strong>{
-                copy.intro
-              }
-            </p>
-            <p>{copy.work}</p>
-            <p>
-              {copy.site}
-              <a
-                href={SITE.profile}
-                target="_blank"
-                rel="noopener noreferrer"
-                class={link}>LinkedIn</a
-              >.
-            </p>
+            {copy.text.map(paragraph => <p set:html={paragraph} />)}
           </div>
 
           <div class="mt-7 flex flex-wrap gap-3">
